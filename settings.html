@@ -22,6 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="export.js" defer></script>
+    <script src="load-page.js" defer></script>
 
     <style>
         .settings-section { display: flex; flex-direction: column; gap: 24px; max-width: 680px; margin: 0 auto; width: 100%; padding-bottom: 40px; }
@@ -128,15 +129,15 @@
         <div class="nav-section">
             <div class="nav-title">Overview</div>
             <div class="nav-items">
-                <a href="dashboard.html" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
-                <a href="transaction.html" class="nav-item"><i class="ph ph-receipt"></i> <span>Transactions</span></a>
+                <a href="dashboard" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="transaction" class="nav-item"><i class="ph ph-receipt"></i> <span>Transactions</span></a>
             </div>
         </div>
 
         <div class="nav-section">
             <div class="nav-title">Settings</div>
             <div class="nav-items">
-                <a href="settings.html" class="nav-item active"><i class="ph-fill ph-gear"></i> <span>Preferences</span></a>
+                <a href="settings" class="nav-item active"><i class="ph-fill ph-gear"></i> <span>Preferences</span></a>
             </div>
         </div>
 
@@ -170,7 +171,7 @@
                     <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.loadFromDrive()" title="Restore from Drive"><i class="ph ph-cloud-arrow-down"></i></button>
                     <button class="btn-outline desktop-only" onclick="window.location.reload();"><i class="ph ph-arrows-clockwise"></i> Refresh Data</button>
                     <button class="btn-outline desktop-only" id="openExportBtn"><i class="ph ph-export"></i> Export</button>
-                    <button class="btn-primary desktop-only" onclick="window.location.href='about.html'"><i class="ph ph-info"></i> About</button>
+                    <button class="btn-primary desktop-only" onclick="window.location.href='about'"><i class="ph ph-info"></i> About</button>
                 </div>
             </header>
 
@@ -284,7 +285,7 @@
                     <div class="brand-icon" style="background: var(--primary); color: var(--primary-invert); border-radius: 16px; display: flex; align-items: center; justify-content: center;"><i class="ph ph-wallet"></i></div>
                     <h2>Wealthwise</h2>
                     <p>Version 1.0.0 Pro<br>A seamless, private, local-first personal finance tracker.</p>
-                    <a href="about.html" class="btn-outline" style="margin-top: 16px; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 10px 24px; text-decoration: none;">
+                    <a href="about" class="btn-outline" style="margin-top: 16px; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 10px 24px; text-decoration: none;">
                         <i class="ph ph-info"></i> More About App
                     </a>
                 </div>
@@ -296,10 +297,10 @@
     <div class="mobile-nav-dock">
         <nav class="mobile-floating-pill">
             <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
-            <a href="transaction.html"><i class="ph ph-receipt"></i><span>Records</span></a>
-            <a href="settings.html" class="active"><i class="ph-fill ph-gear"></i><span>Settings</span></a>
+            <a href="transaction"><i class="ph ph-receipt"></i><span>Records</span></a>
+            <a href="settings" class="active"><i class="ph-fill ph-gear"></i><span>Settings</span></a>
         </nav>
-        <button onclick="window.location.href='about.html'" class="floating-fab-btn">
+        <button onclick="window.location.href='about'" class="floating-fab-btn">
             <i class="ph ph-info"></i>
         </button>
     </div>
