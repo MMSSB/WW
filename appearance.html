@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Appearance - Wealthwise</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .page-container { max-width: 500px; margin: 0 auto; width: 100%; padding: 40px 20px; display: flex; flex-direction: column; gap: 24px; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 16px; }
+        .back-link:hover { color: var(--primary); }
+        .form-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-sm); }
+        .form-card h2 { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .form-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+        .theme-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .theme-card-option { cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: transform 0.2s; }
+        .theme-card-option:hover { transform: translateY(-3px); }
+        .theme-mockup { height: 90px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--bg-canvas); position: relative; overflow: hidden; }
+        .theme-card-option span { font-size: 13px; font-weight: 600; color: var(--text-muted); text-align: center; }
+        .theme-card-option.active .theme-mockup { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+        .theme-card-option.active span { color: var(--text-main); }
+        .light-mockup { background: #f4f4f5; }
+        .dark-mockup { background: #121212; border-color: #27272a; }
+        .system-mockup { background: linear-gradient(to right, #f4f4f5 50%, #121212 50%); }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <a href="settings.html" class="back-link"><i class="ph ph-arrow-left"></i> Back to Settings</a>
+        <div class="form-card">
+            <h2>Appearance</h2>
+            <p>Select your preferred UI appearance.</p>
+            <div class="theme-cards-grid">
+                <div class="theme-card-option" data-theme-val="light">
+                    <div class="theme-mockup light-mockup"></div>
+                    <span>Light</span>
+                </div>
+                <div class="theme-card-option" data-theme-val="system">
+                    <div class="theme-mockup system-mockup"></div>
+                    <span>System</span>
+                </div>
+                <div class="theme-card-option" data-theme-val="dark">
+                    <div class="theme-mockup dark-mockup"></div>
+                    <span>Dark</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Edit Profile - Wealthwise</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .page-container { max-width: 500px; margin: 0 auto; width: 100%; padding: 40px 20px; display: flex; flex-direction: column; gap: 24px; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; transition: color 0.2s; margin-bottom: 16px; }
+        .back-link:hover { color: var(--primary); }
+        .form-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-sm); }
+        .form-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 24px; color: var(--text-main); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .form-group input { width: 100%; padding: 14px; border-radius: 12px; background: var(--bg-canvas); border: 1px solid var(--border-color); color: var(--text-main); font-size: 16px; outline: none; }
+        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .btn-submit { width: 100%; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; background: var(--primary); color: var(--primary-invert); border: none; cursor: pointer; transition: all 0.2s; margin-top: 12px; }
+        .btn-submit:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <a href="settings.html" class="back-link"><i class="ph ph-arrow-left"></i> Back to Settings</a>
+        <div class="form-card">
+            <h2>Profile Details</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="editNameInput" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Initial Capital</label>
+                    <input type="number" id="editBalanceInput" step="0.01" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit" id="saveBtn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Optional: Include script.js if you want global name updates here -->
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('editNameInput').value = localStorage.getItem('userFullName') || localStorage.getItem('userName') || '';
+            document.getElementById('editBalanceInput').value = localStorage.getItem('initialBalance') || 0;
+
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('editNameInput').value.trim();
+                const newBalance = parseFloat(document.getElementById('editBalanceInput').value) || 0;
+                
+                if (newName) {
+                    localStorage.setItem('userName', newName.split(' ')[0]);
+                    localStorage.setItem('userFullName', newName);
+                    localStorage.setItem('initialBalance', newBalance);
+                    
+                    document.getElementById('saveBtn').innerHTML = `<i class="ph ph-spinner fa-spin"></i> Saving...`;
+                    setTimeout(() => { window.location.href = 'settings.html'; }, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

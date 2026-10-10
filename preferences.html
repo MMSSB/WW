@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Preferences - Wealthwise</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .page-container { max-width: 500px; margin: 0 auto; width: 100%; padding: 40px 20px; display: flex; flex-direction: column; gap: 24px; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 16px; }
+        .back-link:hover { color: var(--primary); }
+        
+        .data-card-wrapper { display: flex; flex-direction: column; gap: 16px; }
+        .data-card-item { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-sm); }
+        .dci-header { display: flex; align-items: center; gap: 16px; }
+        .dci-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--bg-canvas); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--text-main); flex-shrink: 0; }
+        .dci-text { display: flex; flex-direction: column; gap: 4px; }
+        .dci-text h4 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
+        .dci-text p { font-size: 13px; color: var(--text-muted); margin: 0; }
+        .dci-action { width: 100%; }
+
+        .modern-select { appearance: none; background: var(--bg-canvas) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%2371717a" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg>') no-repeat right 14px center; border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; outline: none; width: 100%; cursor: pointer; transition: border 0.2s; }
+        .modern-select:focus { border-color: var(--primary); }
+
+        .massive-toggle-label { display: block; width: 100%; position: relative; cursor: pointer; }
+        .massive-toggle-label input { display: none; }
+        .massive-slider { display: block; width: 100%; height: 40px; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 20px; transition: 0.4s; position: relative; }
+        .massive-slider::before { content: ''; position: absolute; top: 4px; left: 4px; width: 30px; height: 30px; background: var(--text-muted); border-radius: 50%; transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        input:checked + .massive-slider { background: var(--income-green); border-color: var(--income-green); }
+        input:checked + .massive-slider::before { background: #fff; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <a href="settings.html" class="back-link"><i class="ph ph-arrow-left"></i> Back to Settings</a>
+        
+        <div class="data-card-wrapper">
+            
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon"><i class="ph ph-currency-dollar"></i></div>
+                    <div class="dci-text">
+                        <h4>Primary Currency</h4>
+                        <p>Global display currency</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <select id="currencySelector" class="modern-select">
+                        <option value="EGP">Egyptian Pound (EGP)</option>
+                        <option value="$">US Dollar (USD $)</option>
+                        <option value="€">Euro (€)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon"><i class="ph ph-clock"></i></div>
+                    <div class="dci-text">
+                        <h4>Auto-fill Date & Time</h4>
+                        <p>When adding a transaction</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <label class="massive-toggle-label">
+                        <input type="checkbox" id="autoTimeToggle">
+                        <span class="massive-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const adjustSlider = () => {
+                const slider = document.querySelector('.massive-slider');
+                if(slider) {
+                    const style = document.createElement('style');
+                    style.innerHTML = `input:checked + .massive-slider::before { transform: translateX(${slider.offsetWidth - 38}px); }`;
+                    document.head.appendChild(style);
+                }
+            };
+            adjustSlider(); window.addEventListener('resize', adjustSlider);
+
+            const selector = document.getElementById('currencySelector');
+            if (selector) {
+                selector.value = localStorage.getItem('currency') || '$';
+                selector.addEventListener('change', (e) => localStorage.setItem('currency', e.target.value));
+            }
+            const timeToggle = document.getElementById('autoTimeToggle');
+            if (timeToggle) {
+                timeToggle.checked = localStorage.getItem('ww_auto_time') !== 'false';
+                timeToggle.addEventListener('change', (e) => localStorage.setItem('ww_auto_time', e.target.checked));
+            }
+        });
+    </script>
+</body>
+</html>

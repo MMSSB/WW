@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Data & Cloud - Wealthwise</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="google.js"></script>
+
+    <style>
+        .page-container { max-width: 500px; margin: 0 auto; width: 100%; padding: 40px 20px; display: flex; flex-direction: column; gap: 24px; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-bottom: 16px; }
+        .back-link:hover { color: var(--primary); }
+        
+        /* 🟢 NEW: Card Style matching Image 2 */
+        .data-card-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .data-card-item {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dci-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .dci-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: var(--text-main);
+            flex-shrink: 0;
+        }
+
+        .dci-text { display: flex; flex-direction: column; gap: 4px; }
+        .dci-text h4 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
+        .dci-text p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+        /* Full Width Actions */
+        .dci-action { width: 100%; }
+
+        .btn-full {
+            width: 100%; padding: 14px; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--bg-canvas); border: 1px solid var(--border-color); color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .btn-full:hover { background: var(--bg-hover); transform: translateY(-2px); }
+        .btn-full:active { transform: scale(0.98); }
+
+        .btn-danger-outline { color: #ef4444; background: transparent; border-color: rgba(239, 68, 68, 0.3); }
+        .btn-danger-outline:hover { background: rgba(239, 68, 68, 0.1); }
+
+        /* 🟢 NEW: Massive Toggle Switch matching Image 2 */
+        .massive-toggle-label {
+            display: block; width: 100%; position: relative; cursor: pointer;
+        }
+        .massive-toggle-label input { display: none; }
+        .massive-slider {
+            display: block; width: 100%; height: 40px;
+            background: var(--bg-canvas); border: 1px solid var(--border-color);
+            border-radius: 20px; transition: 0.4s; position: relative;
+        }
+        .massive-slider::before {
+            content: ''; position: absolute; top: 4px; left: 4px;
+            width: 30px; height: 30px; background: var(--text-muted);
+            border-radius: 50%; transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        input:checked + .massive-slider { background: var(--income-green); border-color: var(--income-green); }
+        input:checked + .massive-slider::before { transform: translateX(calc(100vw - 110px)); background: #fff; }
+        
+        /* Fixed translation for massive slider in exact container width */
+        @media (min-width: 501px) {
+            input:checked + .massive-slider::before { transform: translateX(386px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <a href="settings.html" class="back-link"><i class="ph ph-arrow-left"></i> Back to Settings</a>
+        
+        <div class="data-card-wrapper">
+            
+            <!-- Google Drive -->
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon" style="color:var(--accent-blue); background:rgba(37,99,235,0.1); border-color:transparent;"><i class="ph ph-google-logo"></i></div>
+                    <div class="dci-text">
+                        <h4>Google Drive</h4>
+                        <p>Secure cloud backups</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <button class="btn-full drive-btn-state" onclick="WealthwiseGoogle.signIn()">Connect Account</button>
+                </div>
+            </div>
+
+            <!-- Auto-Backup -->
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon"><i class="ph ph-cloud-arrow-up"></i></div>
+                    <div class="dci-text">
+                        <h4>Auto-Backup</h4>
+                        <p>Sync on every change</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <label class="massive-toggle-label">
+                        <input type="checkbox" id="autoBackupToggle">
+                        <span class="massive-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon"><i class="ph ph-download-simple"></i></div>
+                    <div class="dci-text">
+                        <h4>Export Raw Data</h4>
+                        <p>Download local .json</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <button id="directExportJsonBtn" class="btn-full"><i class="ph ph-brackets-curly"></i> Export</button>
+                </div>
+            </div>
+
+            <!-- Import -->
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon"><i class="ph ph-upload-simple"></i></div>
+                    <div class="dci-text">
+                        <h4>Import Data</h4>
+                        <p>Upload previous backup</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <button id="importDataBtn" class="btn-full"><i class="ph ph-upload"></i> Upload</button>
+                    <input type="file" id="importFileInput" style="display:none;" accept=".json">
+                </div>
+            </div>
+
+            <!-- Reset -->
+            <div class="data-card-item">
+                <div class="dci-header">
+                    <div class="dci-icon" style="color:var(--dot-low); background:rgba(239,68,68,0.1); border-color:transparent;"><i class="ph ph-trash"></i></div>
+                    <div class="dci-text">
+                        <h4 style="color:var(--dot-low);">Reset App Data</h4>
+                        <p>Clear all local logs</p>
+                    </div>
+                </div>
+                <div class="dci-action">
+                    <button id="clearDataBtn" class="btn-full btn-danger-outline">Delete All</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="wwGoogleConfirmOverlay" class="sheet-overlay"></div>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const autoBackupToggle = document.getElementById('autoBackupToggle');
+            if (autoBackupToggle) {
+                autoBackupToggle.checked = localStorage.getItem('ww_auto_backup') === 'true';
+                autoBackupToggle.addEventListener('change', (e) => {
+                    if (e.target.checked && !sessionStorage.getItem('ww_g_token')) {
+                        e.target.checked = false;
+                        if(window.WealthwiseGoogle) WealthwiseGoogle.notify('error', 'Authentication Required', 'Connect Google Drive first before enabling Auto-Backup.');
+                        return;
+                    }
+                    localStorage.setItem('ww_auto_backup', e.target.checked);
+                    if(e.target.checked && window.WealthwiseGoogle) WealthwiseGoogle.saveToDrive(true);
+                });
+            }
+
+            // Slider responsive translation logic fix
+            const adjustSlider = () => {
+                const slider = document.querySelector('.massive-slider');
+                if(slider) {
+                    const style = document.createElement('style');
+                    style.innerHTML = `input:checked + .massive-slider::before { transform: translateX(${slider.offsetWidth - 38}px); }`;
+                    document.head.appendChild(style);
+                }
+            };
+            adjustSlider(); window.addEventListener('resize', adjustSlider);
+
+            document.getElementById('directExportJsonBtn')?.addEventListener('click', () => {
+                const data = localStorage.getItem('financeTransactions') || '[]';
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url;
+                a.download = `Wealthwise_Data_${new Date().toISOString().split('T')[0]}.json`;
+                a.click(); URL.revokeObjectURL(url);
+            });
+
+            const importInput = document.getElementById('importFileInput');
+            document.getElementById('importDataBtn')?.addEventListener('click', () => importInput.click());
+            importInput?.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const parsedData = JSON.parse(event.target.result);
+                        if (Array.isArray(parsedData)) {
+                            localStorage.setItem('financeTransactions', JSON.stringify(parsedData));
+                            if (window.WealthwiseGoogle && localStorage.getItem('ww_auto_backup') === 'true') WealthwiseGoogle.saveToDrive(true);
+                            setTimeout(() => { window.location.href = 'settings.html'; }, 1000);
+                        }
+                    } catch (err) {}
+                    importInput.value = '';
+                };
+                reader.readAsText(file);
+            });
+
+            document.getElementById('clearDataBtn').addEventListener('click', () => {
+                if(confirm("Are you sure you want to delete all financial data locally? This cannot be undone.")) {
+                    localStorage.removeItem('financeTransactions');
+                    setTimeout(() => window.location.href = 'dashboard.html', 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
