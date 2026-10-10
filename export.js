@@ -998,7 +998,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     };
 
-    // Attach Openers across all pages
     document.querySelectorAll('#openExportBtn, #mobileExportBtn').forEach(btn => {
         btn.addEventListener('click', openSheet);
     });
@@ -1007,7 +1006,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeExportBtn) closeExportBtn.addEventListener('click', closeSheet);
     exportOverlay.addEventListener('click', (e) => { if (e.target === exportOverlay) closeSheet(); });
 
-    // Drag Physics Setup
     exportSheet.addEventListener('touchstart', (e) => {
         if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
             startY = e.touches[0].clientY;
@@ -1105,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeSheet();
     });
 
-    // Smart PDF Export
+    // 🟢 SMART PDF EXPORT FIX (No Cut-off Rows)
     document.getElementById('btnExportPDF')?.addEventListener('click', () => {
         if (typeof html2pdf === 'undefined') return alert('PDF library is still loading. Please try again.');
         
@@ -1134,8 +1132,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const dateObj = new Date(r.date);
             const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
             
+            // Adding a specific class to tr to enforce page-break rules
             tableRows += `
-                <tr style="border-bottom: 1px solid #e5e7eb;">
+                <tr class="pdf-table-row" style="border-bottom: 1px solid #e5e7eb;">
                     <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap;">${formattedDate}</td>
                     <td style="width: 15%; padding: 10px 8px; font-size: 12px; white-space: nowrap;">${formatTime12Hour(r.time)}</td>
                     <td style="width: 20%; padding: 10px 8px; font-size: 13px; font-weight: bold; white-space: nowrap;">${formatCurrency(r.amount)}</td>
@@ -1226,12 +1225,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const oldClass = btnIcon ? btnIcon.className : '';
         if (btnIcon) btnIcon.className = 'ph ph-spinner fa-spin';
 
+        // 🟢 FIX: Added pagebreak logic to prevent cutting rows in half
         const opt = {
-            margin:       0.3,
+            margin:       0.4,
             filename:     `Wealthwise_Report_${new Date().toISOString().split('T')[0]}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
+            image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
         html2pdf().set(opt).from(pdfContainer).save().then(() => {

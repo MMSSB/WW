@@ -17,10 +17,8 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
     
-    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="google.js"></script>
-    <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="export.js" defer></script>
@@ -36,6 +34,10 @@
         .profile-details h4 { font-size: 20px; font-weight: 600; margin-bottom: 4px; color: var(--text-main); }
         .profile-details p { font-size: 13px; color: var(--text-muted); }
         
+        /* 🟢 Custom layout for the Balance display inside Profile */
+        .balance-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--bg-hover); padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 8px;}
+        .balance-pill i { color: var(--dot-high); }
+
         .settings-list { display: flex; flex-direction: column; }
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); gap: 16px; flex-wrap: wrap; }
         .settings-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -56,7 +58,6 @@
             .settings-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); }
         }
 
-        /* Toggles */
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-hover); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color); }
@@ -66,7 +67,6 @@
     </style>
 </head>
 <body>
-        <!-- Welcome Modal (With Name & Initial Capital Setup) -->
     <div id="welcomeScreen" class="welcome-overlay">
         <div class="welcome-card">
             <div class="welcome-icon"><i class="ph ph-wallet"></i></div>
@@ -87,10 +87,7 @@
             <span class="brand-text">Wealthwise</span>
         </div>
         <div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
-            <!-- Mobile Export Button -->
-            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
-                <i class="ph ph-export"></i>
-            </button>
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data"><i class="ph ph-export"></i></button>
             
             <div class="theme-dropdown-container">
                 <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
@@ -101,24 +98,15 @@
                 </div>
             </div>
             
-            <!-- Mobile Google Drive Dropdown -->
             <div class="drive-dropdown-container">
-                <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
-                    <i class="ph ph-google-logo"></i>
-                </button>
+                <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;"><i class="ph ph-google-logo"></i></button>
                 <div class="drive-dropdown-menu" id="mobileDriveMenu">
                     <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
                         <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
                     </div>
-                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;">
-                        <i class="ph ph-link"></i> Connect
-                    </a>
-                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;">
-                        <i class="ph ph-cloud-arrow-up"></i> Backup Data
-                    </a>
-                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;">
-                        <i class="ph ph-cloud-arrow-down"></i> Restore Data
-                    </a>
+                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;"><i class="ph ph-link"></i> Connect</a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;"><i class="ph ph-cloud-arrow-up"></i> Backup Data</a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;"><i class="ph ph-cloud-arrow-down"></i> Restore Data</a>
                 </div>
             </div>
         </div>
@@ -140,9 +128,8 @@
         <div class="nav-section">
             <div class="nav-title">Overview</div>
             <div class="nav-items">
-                <a href="dashboard.html" class="nav-item "><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="dashboard.html" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
                 <a href="transaction.html" class="nav-item"><i class="ph ph-receipt"></i> <span>Transactions</span></a>
-                <!-- <a href="analytics.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a> -->
             </div>
         </div>
 
@@ -159,11 +146,8 @@
                 <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
                 <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
             </div>
-
             <div class="sidebar-profile-wrapper">
-                <div class="user-avatar-target">
-                    <i class="ph ph-user"></i>
-                </div>
+                <div class="user-avatar-target"><i class="ph ph-user"></i></div>
                 <div class="profile-text-container">
                     <span class="profile-name" id="sidebarProfileName">Account</span>
                     <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="WealthwiseGoogle.signIn()">Connect Drive</button>
@@ -172,7 +156,6 @@
         </div>
     </aside>
 
-    <!-- Main Settings Area -->
     <main class="dashboard-wrapper">
         <div class="dashboard-scroll-area no-scrollbar">
 
@@ -182,30 +165,18 @@
                     <p>Manage your profile, preferences, and data.</p>
                 </div>
                 <div class="header-actions">
-                                        <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()">
-                        <i class="ph ph-google-logo"></i> Connect Drive
-                    </button>
-                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.saveToDrive()" title="Backup to Drive">
-                        <i class="ph ph-cloud-arrow-up"></i>
-                    </button>
-                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.loadFromDrive()" title="Restore from Drive">
-                        <i class="ph ph-cloud-arrow-down"></i>
-                    </button>
-
-                    <button class="btn-outline desktop-only" onclick="window.location.reload();">
-                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
-                    </button>
-                    <button class="btn-outline desktop-only" id="openExportBtn">
-                        <i class="ph ph-export"></i> Export
-                    </button>
-                    <!-- <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button> -->
+                    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.saveToDrive()" title="Backup to Drive"><i class="ph ph-cloud-arrow-up"></i></button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.loadFromDrive()" title="Restore from Drive"><i class="ph ph-cloud-arrow-down"></i></button>
+                    <button class="btn-outline desktop-only" onclick="window.location.reload();"><i class="ph ph-arrows-clockwise"></i> Refresh Data</button>
+                    <button class="btn-outline desktop-only" id="openExportBtn"><i class="ph ph-export"></i> Export</button>
                     <button class="btn-primary desktop-only" onclick="window.location.href='about.html'"><i class="ph ph-info"></i> About</button>
                 </div>
             </header>
 
             <div class="settings-section">
 
-                <!-- Profile Card -->
+                <!-- 🟢 UPDATED: Profile Card with Initial Balance Display & Unified Edit Button -->
                 <div class="settings-card">
                     <h3>Your Profile</h3>
                     <div class="profile-row">
@@ -213,15 +184,15 @@
                         <div class="profile-details">
                             <h4 id="displayUserFullName">User</h4>
                             <p>Wealthwise Financial Tracker</p>
+                            <div class="balance-pill"><i class="ph-fill ph-wallet"></i> Capital: <span id="displayInitialBalance">0.00</span></div>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button id="openEditProfileBtn" class="btn-outline"><i class="ph ph-pencil-simple"></i> Edit Name</button>
+                            <button id="openEditProfileBtn" class="btn-outline"><i class="ph ph-pencil-simple"></i> Edit Details</button>
                             <button class="btn-outline drive-btn-state" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Financial Preferences -->
                 <div class="settings-card">
                     <h3>Financial Preferences</h3>
                     <div class="settings-list">
@@ -234,7 +205,6 @@
                                 <option value="EGP">Egyptian Pound (EGP)</option>
                                 <option value="$">US Dollar (USD $)</option>
                                 <option value="€">Euro (€)</option>
-                                <!-- <option value="£">British Pound (£)</option> -->
                             </select>
                         </div>
                         <div class="settings-row">
@@ -250,7 +220,6 @@
                     </div>
                 </div>
 
-                <!-- Appearance Card -->
                 <div class="settings-card appearance-card">
                     <h3>Appearance</h3>
                     <div class="setting-group">
@@ -273,11 +242,9 @@
                     </div>
                 </div>
 
-                <!-- Data Management Card -->
                 <div class="settings-card">
                     <h3>Data Management</h3>
                     <div class="settings-list">
-                        <!-- Auto Backup Row -->
                         <div class="settings-row">
                             <div class="settings-row-info">
                                 <i class="ph ph-cloud-arrow-up"></i>
@@ -288,7 +255,6 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <!-- Direct JSON Export -->
                         <div class="settings-row">
                             <div class="settings-row-info">
                                 <i class="ph ph-download-simple"></i>
@@ -296,7 +262,6 @@
                             </div>
                             <button id="directExportJsonBtn" class="btn-outline"><i class="ph ph-brackets-curly" style="color:var(--accent-blue);"></i> Download .json</button>
                         </div>
-                        <!-- Import Data -->
                         <div class="settings-row">
                             <div class="settings-row-info">
                                 <i class="ph ph-upload-simple"></i>
@@ -305,7 +270,6 @@
                             <button id="importDataBtn" class="btn-outline">Upload JSON File</button>
                             <input type="file" id="importFileInput" style="display:none;" accept=".json">
                         </div>
-                        <!-- Reset App -->
                         <div class="settings-row">
                             <div class="settings-row-info danger-text">
                                 <i class="ph ph-trash"></i>
@@ -316,7 +280,6 @@
                     </div>
                 </div>
 
-                <!-- About Card -->
                 <div class="settings-card about-card">
                     <div class="brand-icon" style="background: var(--primary); color: var(--primary-invert); border-radius: 16px; display: flex; align-items: center; justify-content: center;"><i class="ph ph-wallet"></i></div>
                     <h2>Wealthwise</h2>
@@ -330,12 +293,10 @@
         </div>
     </main>
 
-    <!-- Floating Mobile Bottom Navigation -->
     <div class="mobile-nav-dock">
         <nav class="mobile-floating-pill">
             <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
-            <a href="transaction.html"><i class="ph ph-receipt"></i><span>Transactions</span></a>
-            <!-- <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a> -->
+            <a href="transaction.html"><i class="ph ph-receipt"></i><span>Records</span></a>
             <a href="settings.html" class="active"><i class="ph-fill ph-gear"></i><span>Settings</span></a>
         </nav>
         <button onclick="window.location.href='about.html'" class="floating-fab-btn">
@@ -343,12 +304,12 @@
         </button>
     </div>
 
-    <!-- Edit Profile Modal -->
+    <!-- 🟢 UPDATED: Unified Edit Profile & Balance Modal -->
     <div id="profileSheetOverlay" class="sheet-overlay">
         <div class="modal-card bottom-sheet" id="profileSheet">
             <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
             <div class="modal-header sheet-header">
-                <h2>Edit Profile</h2>
+                <h2>Edit Details</h2>
                 <button class="close-btn" id="closeProfileBtn" type="button"><i class="ph ph-x"></i></button>
             </div>
             <form id="profileForm">
@@ -356,7 +317,11 @@
                     <label>Display Name</label>
                     <input type="text" id="editNameInput" placeholder="Enter your full name" required autocomplete="off">
                 </div>
-                <button type="submit" class="btn-submit">Save Changes</button>
+                <div class="form-group" style="margin-top: 8px;">
+                    <label>Initial Capital / Account Balance</label>
+                    <input type="number" id="editBalanceInput" placeholder="e.g. 40000" step="0.01" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit" style="margin-top: 12px;">Save Changes</button>
             </form>
         </div>
     </div>
@@ -384,6 +349,7 @@
         <i id="toastIcon" class="ph-fill ph-check-circle" style="color: #10b981; font-size: 20px;"></i>
         <span id="toastMessage">Action successful</span>
     </div>
+    
     <!-- Export Menu Modal -->
     <div id="exportSheetOverlay" class="sheet-overlay">
         <div class="modal-card bottom-sheet" id="exportSheet">
@@ -432,6 +398,20 @@
                     toast.style.opacity = '0';
                 }, 3000);
             };
+            
+            // Format currency helper
+            const formatMoneyDisplay = (amount) => {
+                const sym = localStorage.getItem('currency') || '$';
+                const val = parseFloat(amount) || 0;
+                const formatted = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return sym === 'EGP' ? `${formatted} EGP` : `${sym}${formatted}`;
+            };
+            
+            // Initial Balance Display
+            const initBalDisplay = document.getElementById('displayInitialBalance');
+            if(initBalDisplay) {
+                initBalDisplay.textContent = formatMoneyDisplay(localStorage.getItem('initialBalance') || 0);
+            }
 
             // Currency
             const selector = document.getElementById('currencySelector');
@@ -439,6 +419,7 @@
                 selector.value = localStorage.getItem('currency') || '$';
                 selector.addEventListener('change', (e) => {
                     localStorage.setItem('currency', e.target.value);
+                    if(initBalDisplay) initBalDisplay.textContent = formatMoneyDisplay(localStorage.getItem('initialBalance') || 0);
                     showToast(`Currency updated to ${e.target.value}`);
                 });
             }
@@ -510,8 +491,9 @@
                 reader.readAsText(file);
             });
 
-            // Profile Form
+            // 🟢 UPDATED: Profile & Balance Form
             const editNameInput = document.getElementById('editNameInput');
+            const editBalanceInput = document.getElementById('editBalanceInput');
             const profileSheetOverlay = document.getElementById('profileSheetOverlay');
             const profileSheet = document.getElementById('profileSheet');
 
@@ -520,7 +502,9 @@
                 profileSheet.style.transition = '';
                 void profileSheet.offsetWidth; 
                 profileSheetOverlay.classList.add('active');
+                
                 editNameInput.value = localStorage.getItem('userFullName') || localStorage.getItem('userName') || '';
+                editBalanceInput.value = localStorage.getItem('initialBalance') || 0;
             };
             
             const closeProfileSheet = () => {
@@ -551,18 +535,26 @@
             document.getElementById('profileForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newName = editNameInput.value.trim();
+                const newBalance = parseFloat(editBalanceInput.value) || 0;
+                
                 if (newName) {
                     localStorage.setItem('userName', newName.split(' ')[0]);
                     localStorage.setItem('userFullName', newName);
+                    localStorage.setItem('initialBalance', newBalance);
+                    
                     document.documentElement.classList.add('has-user');
                     document.getElementById('displayUserFullName').textContent = newName;
                     
+                    if(initBalDisplay) initBalDisplay.textContent = formatMoneyDisplay(newBalance);
+                    
                     // Trigger global name update from script.js
-                    document.querySelectorAll('.displayUserName, #displayUserName').forEach(el => el.textContent = newName.split(' ')[0]);
+                    if(typeof window.updateNames === 'function') window.updateNames();
+                    if(typeof window.updateDashboard === 'function') window.updateDashboard();
                     
                     if (typeof WealthwiseGoogle !== 'undefined') WealthwiseGoogle.updateUI();
+                    
                     closeProfileSheet();
-                    showToast('Profile updated successfully');
+                    showToast('Profile & Balance updated successfully');
                 }
             });
 
