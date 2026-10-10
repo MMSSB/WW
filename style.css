@@ -918,12 +918,26 @@ html.sidebar-collapsed .sidebar-profile-wrapper {
 .close-btn {
     width: 32px;
     height: 32px;
-    border-radius: 8px;
-    display: flex;
+    border-radius: 20px;
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
     color: var(--text-muted);
-    font-size: 18px;
+    /* font-size: 18px; */
+
+
+            /* border-radius: 50px; */
+        background: var(--bg-canvas);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        padding: 0;
 }
 
 .close-btn:hover {
@@ -981,6 +995,22 @@ html.sidebar-collapsed .sidebar-profile-wrapper {
     margin-top: 8px;
 }
 
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50px;
+        background: var(--bg-canvas);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        padding: 0;
+    }
 /* --- MOBILE SPECIFIC ENHANCEMENTS --- */
 @media (max-width: 900px) {
     .content-grid {
@@ -1651,4 +1681,339 @@ html.sidebar-collapsed .sidebar-profile-wrapper {
     text-overflow: ellipsis;
     white-space: normal;
     word-break: break-word;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- PREMIUM MASTER CARD UI --- */
+/* .master-card {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    border-radius: 24px;
+    padding: 32px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 180px;
+}
+
+[data-theme="dark"] .master-card {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    box-shadow: 0 20px 40px -10px rgba(37,99,235,0.4);
+} */
+
+.mc-bg-shapes {
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.mc-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mc-balance {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mc-footer {
+    display: flex;
+    gap: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 16px;
+}
+
+.mc-footer-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mc-footer-item i {
+    font-size: 18px;
+    padding: 6px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+}
+
+.mc-inc i { color: #34d399; }
+.mc-exp i { color: #f87171; }
+
+@media (max-width: 768px) {
+    .master-card { padding: 24px; border-radius: 20px; min-height: 160px; }
+    .mc-balance { font-size: 36px; }
+    .mc-footer { flex-direction: column; gap: 12px; }
+}
+
+/* Animations */
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-count {
+    animation: countUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- PREMIUM MASTER CARD UI --- */
+/* .master-card {
+    background: linear-gradient(-45deg, #111827, #1f2937, #0f172a, #020617);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    border-radius: 24px;
+    padding: 32px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 180px;
+}
+
+[data-theme="dark"] .master-card {
+    background: linear-gradient(-45deg, #1e3a8a, #2563eb, #1d4ed8, #1e40af);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    box-shadow: 0 20px 40px -10px rgba(37,99,235,0.4);
+} */
+/* .master-card { 
+  background: linear-gradient(-45deg, #022c22, #064e3b, #043527, #011f18);
+  background-size: 400% 400%; 
+  animation: gradientBG 15s ease infinite; 
+  border-radius: 24px; 
+  padding: 32px; 
+  color: #ffffff; 
+  position: relative; 
+  overflow: hidden; 
+  box-shadow: 0 20px 40px -10px rgba(9, 219, 149, 0.3); 
+  margin-bottom: 24px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  min-height: 180px; 
+} 
+
+[data-theme="dark"] .master-card { 
+  background: linear-gradient(-45deg, #09db95, #10b981, #059669, #047857); 
+  background-size: 400% 400%; 
+  animation: gradientBG 15s ease infinite; 
+  box-shadow: 0 20px 40px -10px rgba(9, 219, 149, 0.4); 
+} */
+.master-card { 
+  background: linear-gradient(-45deg, #000000, #111111, #1a1a1a, #0a0a0a); /* Deep monochromatic dark palette */
+  background-size: 400% 400%; 
+  animation: gradientBG 15s ease infinite; 
+  border-radius: 24px; 
+  padding: 32px; 
+  color: #ffffff; /* White text for contrast against the dark background */
+  position: relative; 
+  overflow: hidden; 
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); /* Strong black shadow for depth */
+  margin-bottom: 24px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  min-height: 180px; 
+} 
+
+[data-theme="dark"] .master-card { 
+  background: linear-gradient(-45deg, #ffffff, #f3f4f6, #e5e7eb, #d1d5db); /* Clean, bright white and light grey palette */
+  background-size: 400% 400%; 
+  animation: gradientBG 15s ease infinite; 
+  color: #000000; /* Swapped to black text so it remains readable on the white background */
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1); /* Soft, subtle shadow for the light theme */
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.mc-bg-shapes {
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.mc-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mc-balance {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mc-footer {
+    display: flex;
+    gap: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 16px;
+}
+
+.mc-footer-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mc-footer-item i {
+    font-size: 18px;
+    padding: 6px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* .mc-inc i { color: var(--accent-blue); } */
+.mc-inc i { color: #34d399; }
+.mc-exp i { color: #f87171; }
+
+@media (max-width: 768px) {
+    .master-card { padding: 24px; border-radius: 20px; min-height: 270px; }
+    .mc-balance { font-size: 36px; }
+    .mc-footer { flex-direction: column; gap: 12px; }
+}
+
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-count {
+    animation: countUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+    .mobile-header .brand-text {
+        display: block !important;
+        opacity: 1 !important;
+    }
 }

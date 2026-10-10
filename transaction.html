@@ -4,88 +4,404 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Transactions - Wealthwise</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+    </script>
+    
     <script src="theme.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="load-page.js"></script>
+    
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="google.js"></script>
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="export.js" defer></script>
+
+    <!-- PERFECT TRANSACTION UI FIXES -->
+    <!-- <style>
+        .all-readings-container { max-width: 1000px; margin: 0 auto; width: 100%; padding-bottom: 80px; }
+        
+        /* Desktop Stats Grid */
+        .readings-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .r-stat-card { background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 16px; display: flex; align-items: center; gap: 16px; }
+        .r-stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .r-stat-data { display: flex; flex-direction: column; min-width: 0; }
+        .r-stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+        .r-stat-val { font-size: 20px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Filters and Search */
+        .readings-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+        .r-filter-pills { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .r-filter-pills::-webkit-scrollbar { display: none; }
+        .r-pill { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; background: var(--bg-canvas); border: 1px solid var(--border-color); color: var(--text-muted); transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+        .r-pill:hover { background: var(--bg-hover); color: var(--text-main); }
+        .r-pill.active { background: var(--primary); color: var(--primary-invert); border-color: var(--primary); }
+
+        .r-search-box { display: flex; align-items: center; gap: 8px; background: var(--bg-canvas); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px; min-width: 250px; }
+        .r-search-box input { border: none; background: transparent; outline: none; font-size: 13px; color: var(--text-main); width: 100%; }
+
+        /* Data Table (Desktop) */
+        .readings-data-wrapper { background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-card); overflow: hidden; }
+        .r-header { background: var(--bg-dashboard); font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 12px 20px; display: grid; grid-template-columns: 1fr 1fr 1.2fr 1.5fr 2fr 50px; }
+        .r-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr 1.5fr 2fr 50px; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .r-row:hover { background: var(--bg-hover); }
+        .r-row:active { transform: scale(0.99); }
+        .r-row:last-child { border-bottom: none; }
+        .r-action-btn { display: flex; align-items: center; justify-content: flex-end; width: 100%; font-size: 24px; color: var(--text-muted); border: none; background: transparent; cursor: pointer; transition: 0.2s; }
+        .r-action-btn:hover { color: var(--primary); }
+
+        /* Unified responsive text */
+        .r-cat-text { display: none; } /* Hidden on desktop */
+        .r-notes-text { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; }
+
+        /* --- MOBILE ENHANCED UI --- */
+        @media (max-width: 768px) {
+            .dashboard-scroll-area { overflow-x: hidden; }
+            .readings-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+            .r-stat-card { background: var(--bg-dashboard); padding: 12px 10px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); gap: 8px; flex-direction: column; align-items: flex-start; }
+            .r-stat-icon { width: 36px; height: 36px; font-size: 18px; flex-shrink: 0; border-radius: 8px; }
+            .r-stat-data { min-width: 0; flex: 1; }
+            .r-stat-label { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .r-stat-val { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+            .readings-controls { flex-direction: column; align-items: stretch; gap: 16px; }
+            .r-search-box { width: 100%; min-width: 0; background: var(--bg-dashboard); }
+            .r-pill { background: var(--bg-dashboard); }
+
+            .readings-data-wrapper { background: transparent; border: none; overflow: visible; }
+            .readings-list { display: flex; flex-direction: column; gap: 12px; }
+            
+            .r-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-rows: auto auto;
+                grid-template-areas: "amount date" "notes time";
+                gap: 6px 12px; background: var(--bg-dashboard);
+                border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            }
+            .r-col-amount { grid-area: amount; font-size: 22px; font-weight: 700; display: flex; align-items: center; letter-spacing: -0.5px; }
+            .r-col-date { grid-area: date; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-main); }
+            .r-col-notes { grid-area: notes; display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 0; }
+            .r-col-time { grid-area: time; text-align: right; font-size: 13px; color: var(--text-muted); align-self: flex-end; white-space: nowrap; }
+            .r-cat-text { display: inline-block; font-weight: 700; color: var(--text-main); font-size: 13px; white-space: nowrap; }
+            .r-notes-text { font-size: 13px; color: var(--text-muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+            
+            .desktop-only { display: none !important; }
+            .mobile-only { display: block !important; }
+            .r-header, .r-col-actions { display: none !important; }
+        }
+    </style> -->
+    <!-- PERFECT TRANSACTION UI FIXES -->
+    <style>
+        .all-readings-container { max-width: 1000px; margin: 0 auto; width: 100%; padding-bottom: 80px; }
+        
+        /* Desktop Stats Grid */
+        .readings-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .r-stat-card { background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 16px; display: flex; align-items: center; gap: 16px; }
+        .r-stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .r-stat-data { display: flex; flex-direction: column; min-width: 0; }
+        .r-stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+        .r-stat-val { font-size: 20px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Filters and Search */
+        .readings-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+        .r-filter-pills { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .r-filter-pills::-webkit-scrollbar { display: none; }
+        .r-pill { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; background: var(--bg-canvas); border: 1px solid var(--border-color); color: var(--text-muted); transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+        .r-pill:hover { background: var(--bg-hover); color: var(--text-main); }
+        .r-pill.active { background: var(--primary); color: var(--primary-invert); border-color: var(--primary); }
+
+        .r-search-box { display: flex; align-items: center; gap: 8px; background: var(--bg-canvas); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px; min-width: 250px; }
+        .r-search-box input { border: none; background: transparent; outline: none; font-size: 13px; color: var(--text-main); width: 100%; }
+
+        /* Data Table (Desktop) */
+        .readings-data-wrapper { background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-card); overflow: hidden; }
+        
+        /* FIXED GRID COLUMNS FOR DESKTOP */
+        .r-header { background: var(--bg-dashboard); font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 12px 20px; display: grid; grid-template-columns: 1fr 1fr 1.2fr 1.5fr 2fr 50px; }
+        .r-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr 1.5fr 2fr 50px; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; cursor: pointer; transition: 0.2s; }
+        
+        .r-row:hover { background: var(--bg-hover); }
+        .r-row:active { transform: scale(0.99); }
+        .r-row:last-child { border-bottom: none; }
+        .r-action-btn { display: flex; align-items: center; justify-content: flex-end; width: 100%; font-size: 24px; color: var(--text-muted); border: none; background: transparent; cursor: pointer; transition: 0.2s; }
+        .r-action-btn:hover { color: var(--primary); }
+
+        /* Desktop specific formatting */
+        .r-cat-text { display: none; } /* Used in mobile, hidden on desktop */
+        .r-notes-text { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; word-break: break-all; }
+        
+        /* Ensures the category badge looks good on desktop */
+        .r-col-category {
+            display: inline-block;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: var(--bg-hover);
+            color: var(--text-main);
+            white-space: nowrap;
+            width: max-content;
+        }
+
+        /* --- MOBILE ENHANCED UI --- */
+        @media (max-width: 768px) {
+            .dashboard-scroll-area { overflow-x: hidden; }
+            .readings-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+            .r-stat-card { background: var(--bg-dashboard); padding: 12px 10px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); gap: 8px; flex-direction: column; align-items: flex-start; }
+            .r-stat-icon { width: 36px; height: 36px; font-size: 18px; flex-shrink: 0; border-radius: 8px; }
+            .r-stat-data { min-width: 0; flex: 1; }
+            .r-stat-label { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .r-stat-val { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+            .readings-controls { flex-direction: column; align-items: stretch; gap: 16px; }
+            .r-search-box { width: 100%; min-width: 0; background: var(--bg-dashboard); }
+            .r-pill { background: var(--bg-dashboard); }
+
+            .readings-data-wrapper { background: transparent; border: none; overflow: visible; }
+            .readings-list { display: flex; flex-direction: column; gap: 12px; }
+            
+            .r-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-rows: auto auto;
+                grid-template-areas: "amount date" "notes time";
+                gap: 6px 12px; background: var(--bg-dashboard);
+                border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            }
+            .r-col-amount { grid-area: amount; font-size: 22px; font-weight: 700; display: flex; align-items: center; letter-spacing: -0.5px; }
+            .r-col-date { grid-area: date; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-main); }
+            .r-col-notes { grid-area: notes; display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 0; }
+            .r-col-time { grid-area: time; text-align: right; font-size: 13px; color: var(--text-muted); align-self: flex-end; white-space: nowrap; }
+            .r-cat-text { display: inline-block; font-weight: 700; color: var(--text-main); font-size: 13px; white-space: nowrap; }
+            .r-notes-text { font-size: 13px; color: var(--text-muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+            
+            .desktop-only { display: none !important; }
+            .mobile-only { display: block !important; }
+            .r-header, .r-col-actions, .r-col-category { display: none !important; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Welcome Modal (With Name & Initial Capital Setup) -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-wallet"></i></div>
+            <h2>Welcome to Wealthwise</h2>
+            <p>Set up your profile and initial funds to start tracking.</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <input type="number" id="balanceInput" placeholder="Current Account Balance (e.g. 37000)" required step="0.01">
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">Get Started</button>
+            </form>
+        </div>
+    </div>
+    <!-- Mobile Top Bar (Fully Matched to Dashboard) -->
     <header class="mobile-header">
-        <div class="brand"><div class="brand-icon"><i class="ph ph-wallet"></i></div><span class="brand-text">Wealthwise</span></div>
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-wallet"></i></div>
+            <span class="brand-text">Wealthwise</span>
+        </div>
+        <div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
+                <i class="ph ph-export"></i>
+            </button>
+            <div class="theme-dropdown-container">
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+            <div class="drive-dropdown-container">
+                <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
+                    <i class="ph ph-google-logo"></i>
+                </button>
+                <div class="drive-dropdown-menu" id="mobileDriveMenu">
+                    <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
+                        <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
+                    </div>
+                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;"><i class="ph ph-link"></i> Connect</a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;"><i class="ph ph-cloud-arrow-up"></i> Backup Data</a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;"><i class="ph ph-cloud-arrow-down"></i> Restore Data</a>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <aside class="sidebar no-scrollbar">
-        <div class="brand-header"><div class="brand"><div class="brand-icon"><i class="ph ph-wallet"></i></div><span class="brand-text">Wealthwise</span></div></div>
+    <!-- Desktop Sidebar (Fully Matched to Dashboard) -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-wallet"></i></div>
+                <span class="brand-text">Wealthwise</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
         <div class="nav-section">
             <div class="nav-title">Overview</div>
             <div class="nav-items">
-                <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="dashboard" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
                 <a href="transaction.html" class="nav-item active"><i class="ph-fill ph-receipt"></i> <span>Transactions</span></a>
-                <a href="analysis.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
+                <!-- <a href="analytics.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a> -->
             </div>
         </div>
         <div class="nav-section">
             <div class="nav-title">Settings</div>
-            <div class="nav-items"><a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a></div>
+            <div class="nav-items">
+                <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+            <div class="sidebar-profile-wrapper">
+                <div class="user-avatar-target"><i class="ph ph-user"></i></div>
+                <div class="profile-text-container">
+                    <span class="profile-name" id="sidebarProfileName">Account</span>
+                    <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="WealthwiseGoogle.signIn()">Connect Drive</button>
+                </div>
+            </div>
         </div>
     </aside>
 
     <main class="dashboard-wrapper">
         <div class="dashboard-scroll-area no-scrollbar">
+            
+            <!-- Desktop Header (Fully Matched to Dashboard) -->
             <header class="dashboard-header">
-                <div class="header-left"><h1>Transactions</h1><p>Comprehensive ledger of all your monetary flows.</p></div>
-                <div class="header-actions"><button class="btn-primary desktop-only" onclick="openAddLog()"><i class="ph ph-plus"></i> Add Transaction</button></div>
+                <div class="header-left">
+                    <h1>Transactions</h1>
+                    <p>Comprehensive ledger of all your monetary flows.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()">
+                        <i class="ph ph-google-logo"></i> Connect Drive
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.saveToDrive()" title="Backup to Drive">
+                        <i class="ph ph-cloud-arrow-up"></i>
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.loadFromDrive()" title="Restore from Drive">
+                        <i class="ph ph-cloud-arrow-down"></i>
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="window.location.reload();">
+                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+                    </button>
+                    <button class="btn-outline desktop-only" id="openExportBtn">
+                        <i class="ph ph-export"></i> Export
+                    </button>
+                    <button class="btn-primary desktop-only" id="openLogBtn" onclick="window.openAddLog()">
+                        <i class="ph ph-plus"></i> Add Transaction
+                    </button>
+                </div>
             </header>
 
-            <div class="readings-controls">
-                <div class="r-filter-pills">
-                    <button class="r-pill active" data-filter="all">All</button>
-                    <button class="r-pill" data-filter="income">Income</button>
-                    <button class="r-pill" data-filter="expense">Expense</button>
+            <div class="all-readings-container">
+                
+                <!-- 4 Stats Cards -->
+                <div class="readings-stats-grid">
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="ph-fill ph-clock"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Latest</span>
+                            <span class="r-stat-val" id="rStatLatest">--</span>
+                        </div>
+                    </div>
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i class="ph-fill ph-chart-pie-slice"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Avg Transaction</span>
+                            <span class="r-stat-val" id="rStatAvg">--</span>
+                        </div>
+                    </div>
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="ph-fill ph-wallet"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Net Flow</span>
+                            <span class="r-stat-val" id="rStatRange">--</span>
+                        </div>
+                    </div>
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="ph-fill ph-list-numbers"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Total Logs</span>
+                            <span class="r-stat-val" id="rStatTotal">0</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="r-search-box">
-                    <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" id="searchReadingsInput" placeholder="Search transactions...">
+
+                <!-- Filter Pills and Search -->
+                <div class="readings-controls">
+                    <div class="r-filter-pills">
+                        <button class="r-pill active" data-filter="all">All</button>
+                        <button class="r-pill" data-filter="income">Income</button>
+                        <button class="r-pill" data-filter="expense">Expense</button>
+                    </div>
+                    <div class="r-search-box">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchReadingsInput" placeholder="Search transactions...">
+                    </div>
+                </div>
+
+                <!-- Data Table / List -->
+                <div class="readings-data-wrapper">
+                    <div class="r-row r-header desktop-only">
+                        <div>DATE</div>
+                        <div>TIME</div>
+                        <div>AMOUNT</div>
+                        <div>TYPE/CATEGORY</div>
+                        <div>NOTES</div>
+                        <div style="text-align:right;">ACTIONS</div>
+                    </div>
+                    <div class="readings-list" id="allTransactionsList">
+                        <!-- JS renders the cards here -->
+                    </div>
                 </div>
             </div>
 
-            <div class="readings-data-wrapper">
-                <div class="r-row r-header desktop-only">
-                    <div>DATE</div>
-                    <div>TIME</div>
-                    <div>AMOUNT</div>
-                    <div>CATEGORY</div>
-                    <div>NOTES</div>
-                    <div style="text-align:right;">ACTIONS</div>
-                </div>
-                <div class="readings-list" id="allTransactionsList"></div>
-            </div>
         </div>
     </main>
 
+    <!-- Mobile Bottom Dock -->
     <div class="mobile-nav-dock">
         <nav class="mobile-floating-pill">
-            <a href="index.html"><i class="ph ph-squares-four"></i><span>Overview</span></a>
-            <a href="transaction.html" class="active"><i class="ph-fill ph-receipt"></i><span>Records</span></a>
-            <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a>
+            <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <a href="transaction.html" class="active"><i class="ph-fill ph-receipt"></i><span>Transactions</span></a>
+            <!-- <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a> -->
             <a href="settings.html"><i class="ph ph-gear"></i><span>Settings</span></a>
         </nav>
-        <button onclick="openAddLog()" class="floating-fab-btn"><i class="ph ph-plus"></i></button>
+        <button onclick="window.openAddLog()" class="floating-fab-btn"><i class="ph ph-plus"></i></button>
     </div>
 
-    <!-- Modals -->
+    <!-- 3-Dots Action Menu (Includes Edit & Delete) -->
     <div id="actionMenuOverlay" class="sheet-overlay">
         <div class="modal-card bottom-sheet" style="max-width: 320px;">
             <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
             <div class="modal-header"><h2 style="font-size:18px;">Options</h2><button class="close-btn" id="closeActionMenuBtn"><i class="ph ph-x"></i></button></div>
             <div style="display:flex; flex-direction:column; gap:8px;">
                 <button id="btnEditAction" class="btn-outline" style="justify-content:flex-start; padding:14px;"><i class="ph ph-pencil-simple"></i> Edit</button>
-                <button id="btnDeleteAction" class="btn-outline danger-text danger-border" style="justify-content:flex-start; padding:14px;"><i class="ph ph-trash"></i> Delete</button>
+                <button id="btnDeleteAction" class="btn-outline danger-text danger-border" style="justify-content:flex-start; padding:14px; background: var(--status-bad-bg);"><i class="ph ph-trash"></i> Delete</button>
             </div>
         </div>
     </div>
     
-    <!-- Reuse Add Modal here from index.html -->
+    <!-- Add/Edit Transaction Form Modal -->
     <div id="logSheetOverlay" class="sheet-overlay">
         <div class="modal-card bottom-sheet">
             <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
@@ -97,15 +413,78 @@
                     <div class="form-group"><label>Time</label><input type="time" id="logTime" required></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Type</label><select id="logType"><option value="expense">Expense</option><option value="income">Income</option></select></div>
-                    <div class="form-group"><label>Amount</label><input type="number" id="logAmount" step="0.01" required></div>
+                    <div class="form-group"><label>Type</label><select id="logType" required><option value="expense">Expense</option><option value="income">Income</option></select></div>
+                    <div class="form-group"><label>Amount</label><input type="number" id="logAmount" step="0.01" placeholder="0.00" required></div>
                 </div>
-                <div class="form-group"><label>Category</label><input type="text" id="logCategory" required></div>
-                <div class="form-group"><label>Notes</label><textarea id="logNotes" class="responsive-textarea"></textarea></div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="logCategory" placeholder="e.g. Salary, Rent, Food..." required>
+                </div>
+                <div class="form-group"><label>Notes (Optional)</label><textarea id="logNotes" class="responsive-textarea" placeholder="Add details..."></textarea></div>
                 <button type="submit" class="btn-submit">Save Transaction</button>
             </form>
         </div>
     </div>
+    
+    <!-- Transaction Details Modal (Includes Edit & Delete) -->
+    <div id="detailsSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="detailsSheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header">
+                <h2>Transaction Details</h2>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button id="btnDetailsEdit" class="icon-btn" title="Edit Log" style="font-size: 20px; color: var(--text-main);"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="close-btn" id="closeDetailsBtn" type="button"><i class="ph ph-x"></i></button>
+                </div>
+            </div>
+            <div class="details-group">
+                <div class="detail-row">
+                    <span class="detail-label">Amount</span>
+                    <div class="detail-value large"><span id="detAmount">0.00</span></div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type</span>
+                    <div class="detail-value"><span id="detType" class="status-badge">--</span></div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Category</span>
+                    <span class="detail-value" id="detCategory">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span class="detail-value" id="detDate">--</span>
+                </div>
+                <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 8px; border: none;">
+                    <span class="detail-label">Notes</span>
+                    <span class="detail-value" id="detNotes" style="text-align: left; color: var(--text-light); font-style: italic; background: var(--bg-hover); padding: 12px; border-radius: 8px; width: 100%;"></span>
+                </div>
+            </div>
+            <button id="btnDetailsDelete" class="btn-outline danger-text danger-border" style="width: 100%; justify-content: center; margin-top: 16px; background: var(--status-bad-bg);"><i class="ph ph-trash"></i> Delete Transaction</button>
+        </div>
+    </div>
+
+    <!-- Export Menu Modal -->
+    <div id="exportSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="exportSheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+                <h2 style="font-size: 18px;">Export Data</h2>
+                <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Financial Report (PDF)
+                </button>
+                <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+                </button>
+                <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>

@@ -5,27 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Settings - Wealthwise</title>
     
-    <!-- Prevents flash of wrong theme on load -->
     <script>
         const savedTheme = localStorage.getItem('theme') || 'system';
         const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
         if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
-        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
     </script>
     <script src="theme.js"></script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
-    <script src="load-page.js"></script>
+    
+    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="google.js"></script>
+    <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="export.js" defer></script>
@@ -61,7 +56,7 @@
             .settings-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); }
         }
 
-        /* Auto Backup Toggle Switch */
+        /* Toggles */
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-hover); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color); }
@@ -71,6 +66,19 @@
     </style>
 </head>
 <body>
+        <!-- Welcome Modal (With Name & Initial Capital Setup) -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-wallet"></i></div>
+            <h2>Welcome to Wealthwise</h2>
+            <p>Set up your profile and initial funds to start tracking.</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <input type="number" id="balanceInput" placeholder="Current Account Balance (e.g. 37000)" required step="0.01">
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">Get Started</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Mobile Top Bar -->
     <header class="mobile-header">
@@ -79,7 +87,11 @@
             <span class="brand-text">Wealthwise</span>
         </div>
         <div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
-            <button id="mobileExportBtn" class="icon-btn" title="Export Data"><i class="ph ph-export"></i></button>  
+            <!-- Mobile Export Button -->
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
+                <i class="ph ph-export"></i>
+            </button>
+            
             <div class="theme-dropdown-container">
                 <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
                 <div class="theme-dropdown-menu" id="themeIconMenu">
@@ -88,7 +100,8 @@
                     <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
                 </div>
             </div>
-            <!-- Google Drive Dropdown -->
+            
+            <!-- Mobile Google Drive Dropdown -->
             <div class="drive-dropdown-container">
                 <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
                     <i class="ph ph-google-logo"></i>
@@ -97,9 +110,15 @@
                     <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
                         <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
                     </div>
-                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;"><i class="ph ph-link"></i> Connect</a>
-                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;"><i class="ph ph-cloud-arrow-up"></i> Backup Data</a>
-                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;"><i class="ph ph-cloud-arrow-down"></i> Restore Data</a>
+                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;">
+                        <i class="ph ph-link"></i> Connect
+                    </a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;">
+                        <i class="ph ph-cloud-arrow-up"></i> Backup Data
+                    </a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;">
+                        <i class="ph ph-cloud-arrow-down"></i> Restore Data
+                    </a>
                 </div>
             </div>
         </div>
@@ -121,9 +140,9 @@
         <div class="nav-section">
             <div class="nav-title">Overview</div>
             <div class="nav-items">
-                <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="dashboard.html" class="nav-item "><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
                 <a href="transaction.html" class="nav-item"><i class="ph ph-receipt"></i> <span>Transactions</span></a>
-                <a href="analysis.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
+                <!-- <a href="analytics.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a> -->
             </div>
         </div>
 
@@ -140,8 +159,11 @@
                 <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
                 <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
             </div>
+
             <div class="sidebar-profile-wrapper">
-                <div class="user-avatar-target"><i class="ph ph-user"></i></div>
+                <div class="user-avatar-target">
+                    <i class="ph ph-user"></i>
+                </div>
                 <div class="profile-text-container">
                     <span class="profile-name" id="sidebarProfileName">Account</span>
                     <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="WealthwiseGoogle.signIn()">Connect Drive</button>
@@ -160,8 +182,23 @@
                     <p>Manage your profile, preferences, and data.</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
-                    <button class="btn-outline desktop-only" id="openExportBtn"><i class="ph ph-export"></i> Export</button>
+                                        <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()">
+                        <i class="ph ph-google-logo"></i> Connect Drive
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.saveToDrive()" title="Backup to Drive">
+                        <i class="ph ph-cloud-arrow-up"></i>
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.loadFromDrive()" title="Restore from Drive">
+                        <i class="ph ph-cloud-arrow-down"></i>
+                    </button>
+
+                    <button class="btn-outline desktop-only" onclick="window.location.reload();">
+                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+                    </button>
+                    <button class="btn-outline desktop-only" id="openExportBtn">
+                        <i class="ph ph-export"></i> Export
+                    </button>
+                    <!-- <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button> -->
                     <button class="btn-primary desktop-only" onclick="window.location.href='about.html'"><i class="ph ph-info"></i> About</button>
                 </div>
             </header>
@@ -179,25 +216,37 @@
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button id="openEditProfileBtn" class="btn-outline"><i class="ph ph-pencil-simple"></i> Edit Name</button>
-                            <button id="settingsGoogleBtn" class="btn-outline" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
+                            <button class="btn-outline drive-btn-state" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Currency Selection -->
+                <!-- Financial Preferences -->
                 <div class="settings-card">
                     <h3>Financial Preferences</h3>
-                    <div class="settings-row">
-                        <div class="settings-row-info">
-                            <i class="ph ph-currency-dollar"></i>
-                            <span>Primary Currency</span>
+                    <div class="settings-list">
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-currency-dollar"></i>
+                                <span>Primary Currency</span>
+                            </div>
+                            <select id="currencySelector" style="padding: 10px 14px; border-radius: var(--radius-btn); border: 1px solid var(--border-color); background: var(--bg-canvas); color: var(--text-main); font-weight: 500; outline: none; cursor: pointer;">
+                                <option value="EGP">Egyptian Pound (EGP)</option>
+                                <option value="$">US Dollar (USD $)</option>
+                                <option value="€">Euro (€)</option>
+                                <!-- <option value="£">British Pound (£)</option> -->
+                            </select>
                         </div>
-                        <select id="currencySelector" style="padding: 10px 14px; border-radius: var(--radius-btn); border: 1px solid var(--border-color); background: var(--bg-canvas); color: var(--text-main); font-weight: 500; outline: none; cursor: pointer;">
-                            <option value="$">US Dollar (USD $)</option>
-                            <option value="EGP">Egyptian Pound (EGP)</option>
-                            <option value="€">Euro (€)</option>
-                            <option value="£">British Pound (£)</option>
-                        </select>
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-clock"></i>
+                                <span>Auto-fill Date & Time</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoTimeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -239,15 +288,15 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        <!-- Export Row -->
+                        <!-- Direct JSON Export -->
                         <div class="settings-row">
                             <div class="settings-row-info">
                                 <i class="ph ph-download-simple"></i>
                                 <span>Export Data</span>
                             </div>
-                            <button id="openExportBtnList" class="btn-outline">Download Data</button>
+                            <button id="directExportJsonBtn" class="btn-outline"><i class="ph ph-brackets-curly" style="color:var(--accent-blue);"></i> Download .json</button>
                         </div>
-                        <!-- Import Row -->
+                        <!-- Import Data -->
                         <div class="settings-row">
                             <div class="settings-row-info">
                                 <i class="ph ph-upload-simple"></i>
@@ -256,7 +305,7 @@
                             <button id="importDataBtn" class="btn-outline">Upload JSON File</button>
                             <input type="file" id="importFileInput" style="display:none;" accept=".json">
                         </div>
-                        <!-- Reset Row -->
+                        <!-- Reset App -->
                         <div class="settings-row">
                             <div class="settings-row-info danger-text">
                                 <i class="ph ph-trash"></i>
@@ -284,31 +333,14 @@
     <!-- Floating Mobile Bottom Navigation -->
     <div class="mobile-nav-dock">
         <nav class="mobile-floating-pill">
-            <a href="index.html"><i class="ph ph-squares-four"></i><span>Overview</span></a>
-            <a href="transaction.html"><i class="ph ph-receipt"></i><span>Records</span></a>
-            <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a>
+            <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <a href="transaction.html"><i class="ph ph-receipt"></i><span>Transactions</span></a>
+            <!-- <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a> -->
             <a href="settings.html" class="active"><i class="ph-fill ph-gear"></i><span>Settings</span></a>
         </nav>
         <button onclick="window.location.href='about.html'" class="floating-fab-btn">
             <i class="ph ph-info"></i>
         </button>
-    </div>
-
-    <!-- Mobile Menu Overlay -->
-    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
-        <div class="bottom-sheet" id="menuSheet">
-            <div class="drag-handle-wrapper"><div class="drag-handle"></div></div>
-            <div class="sheet-header">
-                <h2>Menu</h2>
-                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
-            </div>
-            <div class="menu-list no-scrollbar" style="overflow-y: auto;">
-                <a href="index.html" class="menu-item"><i class="ph ph-activity"></i> Dashboard</a>
-                <a href="transaction.html" class="menu-item"><i class="ph ph-receipt"></i> Transactions</a>
-                <a href="analysis.html" class="menu-item"><i class="ph ph-chart-line-up"></i> Analytics</a>
-                <a href="settings.html" class="menu-item active"><i class="ph ph-gear"></i> Settings</a>
-            </div>
-        </div>
     </div>
 
     <!-- Edit Profile Modal -->
@@ -352,7 +384,6 @@
         <i id="toastIcon" class="ph-fill ph-check-circle" style="color: #10b981; font-size: 20px;"></i>
         <span id="toastMessage">Action successful</span>
     </div>
-
     <!-- Export Menu Modal -->
     <div id="exportSheetOverlay" class="sheet-overlay">
         <div class="modal-card bottom-sheet" id="exportSheet">
@@ -374,10 +405,9 @@
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 
-    <!-- Settings Specific Logic -->
+    <!-- Settings Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -403,13 +433,22 @@
                 }, 3000);
             };
 
-            // Currency Selector
+            // Currency
             const selector = document.getElementById('currencySelector');
             if (selector) {
                 selector.value = localStorage.getItem('currency') || '$';
                 selector.addEventListener('change', (e) => {
                     localStorage.setItem('currency', e.target.value);
                     showToast(`Currency updated to ${e.target.value}`);
+                });
+            }
+
+            // Auto-Time
+            const timeToggle = document.getElementById('autoTimeToggle');
+            if (timeToggle) {
+                timeToggle.checked = localStorage.getItem('ww_auto_time') !== 'false';
+                timeToggle.addEventListener('change', (e) => {
+                    localStorage.setItem('ww_auto_time', e.target.checked);
                 });
             }
 
@@ -428,7 +467,20 @@
                 });
             }
 
-            // --- IMPORT JSON DATA LOGIC ---
+            // Direct JSON Download
+            document.getElementById('directExportJsonBtn')?.addEventListener('click', () => {
+                const data = localStorage.getItem('financeTransactions') || '[]';
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Wealthwise_Data_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Data exported to JSON successfully');
+            });
+
+            // Import JSON
             const importInput = document.getElementById('importFileInput');
             document.getElementById('importDataBtn')?.addEventListener('click', () => importInput.click());
 
@@ -443,14 +495,12 @@
                             localStorage.setItem('financeTransactions', JSON.stringify(parsedData));
                             showToast('Data imported successfully');
                             
-                            // Auto trigger cloud sync if enabled
                             if (window.WealthwiseGoogle && localStorage.getItem('ww_auto_backup') === 'true') {
                                 WealthwiseGoogle.saveToDrive(true);
                             }
-                            
-                            setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+                            setTimeout(() => { window.location.href = 'dashboard'; }, 1000);
                         } else {
-                            showToast('Invalid JSON file format', true);
+                            showToast('Invalid JSON format', true);
                         }
                     } catch (err) {
                         showToast('Error reading the file', true);
@@ -460,7 +510,7 @@
                 reader.readAsText(file);
             });
 
-            // Profile Editor Logic
+            // Profile Form
             const editNameInput = document.getElementById('editNameInput');
             const profileSheetOverlay = document.getElementById('profileSheetOverlay');
             const profileSheet = document.getElementById('profileSheet');
@@ -482,7 +532,6 @@
             document.getElementById('closeProfileBtn').addEventListener('click', closeProfileSheet);
             profileSheetOverlay.addEventListener('click', (e) => { if (e.target === profileSheetOverlay) closeProfileSheet(); });
 
-            // Profile Drag Physics
             let pStartY = 0, pCurrentY = 0, pIsDragging = false;
             profileSheet.addEventListener('touchstart', (e) => {
                 if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
@@ -507,13 +556,17 @@
                     localStorage.setItem('userFullName', newName);
                     document.documentElement.classList.add('has-user');
                     document.getElementById('displayUserFullName').textContent = newName;
+                    
+                    // Trigger global name update from script.js
+                    document.querySelectorAll('.displayUserName, #displayUserName').forEach(el => el.textContent = newName.split(' ')[0]);
+                    
                     if (typeof WealthwiseGoogle !== 'undefined') WealthwiseGoogle.updateUI();
                     closeProfileSheet();
                     showToast('Profile updated successfully');
                 }
             });
 
-            // Confirm Delete Logic
+            // Confirm Delete
             const confirmDeleteOverlay = document.getElementById('confirmDeleteOverlay');
             const confirmDeleteSheet = document.getElementById('confirmDeleteSheet');
 
@@ -535,7 +588,7 @@
                 localStorage.removeItem('financeTransactions');
                 closeConfirmDelete();
                 showToast('All data has been deleted');
-                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+                setTimeout(() => { window.location.href = 'dashboard'; }, 1500);
             });
 
             let delStartY = 0, delCurrentY = 0, isDelDragging = false;
@@ -554,10 +607,6 @@
                 if (delCurrentY - delStartY > 80) closeConfirmDelete(); else confirmDeleteSheet.style.transform = 'translateY(0)';
             });
             
-            // Link Export List Button
-            document.getElementById('openExportBtnList')?.addEventListener('click', () => {
-                document.getElementById('openExportBtn')?.click();
-            });
         });
     </script>
 </body>
