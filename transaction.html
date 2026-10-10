@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Transactions - Wealthwise</title>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="mobile-header">
+        <div class="brand"><div class="brand-icon"><i class="ph ph-wallet"></i></div><span class="brand-text">Wealthwise</span></div>
+    </header>
+
+    <aside class="sidebar no-scrollbar">
+        <div class="brand-header"><div class="brand"><div class="brand-icon"><i class="ph ph-wallet"></i></div><span class="brand-text">Wealthwise</span></div></div>
+        <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="transaction.html" class="nav-item active"><i class="ph-fill ph-receipt"></i> <span>Transactions</span></a>
+                <a href="analysis.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items"><a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a></div>
+        </div>
+    </aside>
+
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+            <header class="dashboard-header">
+                <div class="header-left"><h1>Transactions</h1><p>Comprehensive ledger of all your monetary flows.</p></div>
+                <div class="header-actions"><button class="btn-primary desktop-only" onclick="openAddLog()"><i class="ph ph-plus"></i> Add Transaction</button></div>
+            </header>
+
+            <div class="readings-controls">
+                <div class="r-filter-pills">
+                    <button class="r-pill active" data-filter="all">All</button>
+                    <button class="r-pill" data-filter="income">Income</button>
+                    <button class="r-pill" data-filter="expense">Expense</button>
+                </div>
+                <div class="r-search-box">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="searchReadingsInput" placeholder="Search transactions...">
+                </div>
+            </div>
+
+            <div class="readings-data-wrapper">
+                <div class="r-row r-header desktop-only">
+                    <div>DATE</div>
+                    <div>TIME</div>
+                    <div>AMOUNT</div>
+                    <div>CATEGORY</div>
+                    <div>NOTES</div>
+                    <div style="text-align:right;">ACTIONS</div>
+                </div>
+                <div class="readings-list" id="allTransactionsList"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="mobile-nav-dock">
+        <nav class="mobile-floating-pill">
+            <a href="index.html"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <a href="transaction.html" class="active"><i class="ph-fill ph-receipt"></i><span>Records</span></a>
+            <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a>
+            <a href="settings.html"><i class="ph ph-gear"></i><span>Settings</span></a>
+        </nav>
+        <button onclick="openAddLog()" class="floating-fab-btn"><i class="ph ph-plus"></i></button>
+    </div>
+
+    <!-- Modals -->
+    <div id="actionMenuOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" style="max-width: 320px;">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header"><h2 style="font-size:18px;">Options</h2><button class="close-btn" id="closeActionMenuBtn"><i class="ph ph-x"></i></button></div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button id="btnEditAction" class="btn-outline" style="justify-content:flex-start; padding:14px;"><i class="ph ph-pencil-simple"></i> Edit</button>
+                <button id="btnDeleteAction" class="btn-outline danger-text danger-border" style="justify-content:flex-start; padding:14px;"><i class="ph ph-trash"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reuse Add Modal here from index.html -->
+    <div id="logSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header"><h2 id="logModalTitle">Add Transaction</h2><button class="close-btn" id="closeLogBtn"><i class="ph ph-x"></i></button></div>
+            <form id="logForm">
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="logDate" required></div>
+                    <div class="form-group"><label>Time</label><input type="time" id="logTime" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Type</label><select id="logType"><option value="expense">Expense</option><option value="income">Income</option></select></div>
+                    <div class="form-group"><label>Amount</label><input type="number" id="logAmount" step="0.01" required></div>
+                </div>
+                <div class="form-group"><label>Category</label><input type="text" id="logCategory" required></div>
+                <div class="form-group"><label>Notes</label><textarea id="logNotes" class="responsive-textarea"></textarea></div>
+                <button type="submit" class="btn-submit">Save Transaction</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
