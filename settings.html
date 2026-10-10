@@ -4,28 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Settings - Wealthwise</title>
+    
+    <!-- Prevents flash of wrong theme on load -->
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+    </script>
     <script src="theme.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="load-page.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="google.js"></script>
-    <script src="export.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="export.js" defer></script>
+
     <style>
+        .settings-section { display: flex; flex-direction: column; gap: 24px; max-width: 680px; margin: 0 auto; width: 100%; padding-bottom: 40px; }
+        .settings-card { background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-sm); }
+        .settings-card h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; }
+        
+        .profile-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .profile-avatar { width: 64px; height: 64px; background: var(--primary); color: var(--primary-invert); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
+        .profile-details { flex: 1; min-width: 150px; }
+        .profile-details h4 { font-size: 20px; font-weight: 600; margin-bottom: 4px; color: var(--text-main); }
+        .profile-details p { font-size: 13px; color: var(--text-muted); }
+        
+        .settings-list { display: flex; flex-direction: column; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); gap: 16px; flex-wrap: wrap; }
+        .settings-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .settings-row-info { display: flex; align-items: center; gap: 12px; }
+        .settings-row-info i { font-size: 22px; color: var(--text-muted); }
+        .settings-row-info span { font-size: 15px; font-weight: 500; color: var(--text-main); }
+        
+        .about-card { align-items: center; text-align: center; padding: 32px 24px; }
+        .about-card .brand-icon { width: 56px; height: 56px; font-size: 28px; margin: 0 auto 12px auto; }
+        .about-card h2 { font-size: 22px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .about-card p { color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+        
+        .danger-text { color: var(--dot-low) !important; }
+        .danger-border { border-color: rgba(239, 68, 68, 0.3) !important; }
+        .danger-border:hover { background: var(--status-bad-bg) !important; }
+        
+        @media (max-width: 768px) {
+            .settings-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); }
+        }
+
+        /* Auto Backup Toggle Switch */
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-hover); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color); }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-hover); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color); }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: var(--text-muted); transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--income-green); border-color: var(--income-green); }
         input:checked + .slider:before { transform: translateX(20px); background-color: #fff; }
     </style>
 </head>
 <body>
+
+    <!-- Mobile Top Bar -->
     <header class="mobile-header">
-        <div class="brand"><div class="brand-icon"><i class="ph ph-wallet"></i></div><span class="brand-text">Wealthwise</span></div>
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-wallet"></i></div>
+            <span class="brand-text">Wealthwise</span>
+        </div>
+        <div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data"><i class="ph ph-export"></i></button>  
+            <div class="theme-dropdown-container">
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+            <!-- Google Drive Dropdown -->
+            <div class="drive-dropdown-container">
+                <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
+                    <i class="ph ph-google-logo"></i>
+                </button>
+                <div class="drive-dropdown-menu" id="mobileDriveMenu">
+                    <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
+                        <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
+                    </div>
+                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;"><i class="ph ph-link"></i> Connect</a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;"><i class="ph ph-cloud-arrow-up"></i> Backup Data</a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;"><i class="ph ph-cloud-arrow-down"></i> Restore Data</a>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <aside class="sidebar no-scrollbar">
-        <div class="brand-header"><div class="brand"><div class="brand-icon"><i class="ph ph-wallet"></i></div><span class="brand-text">Wealthwise</span></div></div>
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-wallet"></i></div>
+                <span class="brand-text">Wealthwise</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
         <div class="nav-section">
             <div class="nav-title">Overview</div>
             <div class="nav-items">
@@ -34,59 +126,162 @@
                 <a href="analysis.html" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
             </div>
         </div>
+
         <div class="nav-section">
             <div class="nav-title">Settings</div>
-            <div class="nav-items"><a href="settings.html" class="nav-item active"><i class="ph-fill ph-gear"></i> <span>Preferences</span></a></div>
+            <div class="nav-items">
+                <a href="settings.html" class="nav-item active"><i class="ph-fill ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+            <div class="sidebar-profile-wrapper">
+                <div class="user-avatar-target"><i class="ph ph-user"></i></div>
+                <div class="profile-text-container">
+                    <span class="profile-name" id="sidebarProfileName">Account</span>
+                    <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="WealthwiseGoogle.signIn()">Connect Drive</button>
+                </div>
+            </div>
         </div>
     </aside>
 
+    <!-- Main Settings Area -->
     <main class="dashboard-wrapper">
         <div class="dashboard-scroll-area no-scrollbar">
+
             <header class="dashboard-header">
-                <div class="header-left"><h1>Preferences</h1><p>Control your currency, appearance, and logs.</p></div>
-                <div class="header-actions"><button class="btn-primary desktop-only" onclick="window.location.href='about.html'"><i class="ph ph-info"></i> About</button></div>
+                <div class="header-left">
+                    <h1>Settings</h1>
+                    <p>Manage your profile, preferences, and data.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
+                    <button class="btn-outline desktop-only" id="openExportBtn"><i class="ph ph-export"></i> Export</button>
+                    <button class="btn-primary desktop-only" onclick="window.location.href='about.html'"><i class="ph ph-info"></i> About</button>
+                </div>
             </header>
 
-            <div style="display:flex; flex-direction:column; gap:24px; max-width:680px; width:100%; margin: 0 auto;">
-                
+            <div class="settings-section">
+
+                <!-- Profile Card -->
                 <div class="settings-card">
-                    <h3>Your Currency</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0;">
-                        <div style="display:flex; align-items:center; gap:12px; font-weight:500;"><i class="ph ph-currency-dollar" style="font-size:22px; color:var(--text-muted);"></i><span>Primary Currency</span></div>
-                        <select id="currencySelector" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-canvas); color: var(--text-main); font-weight: 600;">
+                    <h3>Your Profile</h3>
+                    <div class="profile-row">
+                        <div class="profile-avatar user-avatar-target"><i class="ph ph-user"></i></div>
+                        <div class="profile-details">
+                            <h4 id="displayUserFullName">User</h4>
+                            <p>Wealthwise Financial Tracker</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button id="openEditProfileBtn" class="btn-outline"><i class="ph ph-pencil-simple"></i> Edit Name</button>
+                            <button id="settingsGoogleBtn" class="btn-outline" onclick="WealthwiseGoogle.signIn()"><i class="ph ph-google-logo"></i> Connect Drive</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Currency Selection -->
+                <div class="settings-card">
+                    <h3>Financial Preferences</h3>
+                    <div class="settings-row">
+                        <div class="settings-row-info">
+                            <i class="ph ph-currency-dollar"></i>
+                            <span>Primary Currency</span>
+                        </div>
+                        <select id="currencySelector" style="padding: 10px 14px; border-radius: var(--radius-btn); border: 1px solid var(--border-color); background: var(--bg-canvas); color: var(--text-main); font-weight: 500; outline: none; cursor: pointer;">
                             <option value="$">US Dollar (USD $)</option>
                             <option value="EGP">Egyptian Pound (EGP)</option>
+                            <option value="€">Euro (€)</option>
+                            <option value="£">British Pound (£)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="settings-card">
-                    <h3>Google Drive Backup</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom: 1px solid var(--border-color);">
-                        <div style="display:flex; align-items:center; gap:12px; font-weight:500;"><i class="ph ph-google-logo" style="font-size:22px; color:var(--text-muted);"></i><span>Connect Account</span></div>
-                        <button class="btn-outline drive-btn-state"><i class="ph ph-google-logo"></i> Connect Drive</button>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0;">
-                        <div style="display:flex; align-items:center; gap:12px; font-weight:500;"><i class="ph ph-cloud-arrow-up" style="font-size:22px; color:var(--text-muted);"></i><span>Auto-Backup</span></div>
-                        <label class="toggle-switch"><input type="checkbox" id="autoBackupToggle"><span class="slider"></span></label>
+                <!-- Appearance Card -->
+                <div class="settings-card appearance-card">
+                    <h3>Appearance</h3>
+                    <div class="setting-group">
+                        <label>Interface Theme</label>
+                        <p class="setting-desc">Select your preferred UI appearance.</p>
+                        <div class="theme-cards-grid">
+                            <div class="theme-card-option" data-theme-val="light">
+                                <div class="theme-mockup light-mockup"><i class="ph-fill ph-check-circle check-icon"></i></div>
+                                <span>Light Theme</span>
+                            </div>
+                            <div class="theme-card-option" data-theme-val="system">
+                                <div class="theme-mockup system-mockup"><i class="ph-fill ph-check-circle check-icon"></i></div>
+                                <span>System</span>
+                            </div>
+                            <div class="theme-card-option" data-theme-val="dark">
+                                <div class="theme-mockup dark-mockup"><i class="ph-fill ph-check-circle check-icon"></i></div>
+                                <span>Dark Theme</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Data Management Card -->
                 <div class="settings-card">
                     <h3>Data Management</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom: 1px solid var(--border-color);">
-                        <div style="display:flex; align-items:center; gap:12px; font-weight:500;"><i class="ph ph-download-simple" style="font-size:22px; color:var(--text-muted);"></i><span>Export Data</span></div>
-                        <button id="openExportBtn" class="btn-outline">Download .json</button>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0;">
-                        <div style="display:flex; align-items:center; gap:12px; font-weight:500; color:var(--expense-red);"><i class="ph ph-trash" style="font-size:22px;"></i><span>Reset App Data</span></div>
-                        <button id="clearDataBtn" class="btn-outline danger-border danger-text">Delete All</button>
+                    <div class="settings-list">
+                        <!-- Auto Backup Row -->
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-cloud-arrow-up"></i>
+                                <span>Auto-Backup to Drive</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoBackupToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <!-- Export Row -->
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-download-simple"></i>
+                                <span>Export Data</span>
+                            </div>
+                            <button id="openExportBtnList" class="btn-outline">Download Data</button>
+                        </div>
+                        <!-- Import Row -->
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-upload-simple"></i>
+                                <span>Import Data</span>
+                            </div>
+                            <button id="importDataBtn" class="btn-outline">Upload JSON File</button>
+                            <input type="file" id="importFileInput" style="display:none;" accept=".json">
+                        </div>
+                        <!-- Reset Row -->
+                        <div class="settings-row">
+                            <div class="settings-row-info danger-text">
+                                <i class="ph ph-trash"></i>
+                                <span>Reset App Data</span>
+                            </div>
+                            <button id="clearDataBtn" class="btn-outline danger-border danger-text">Delete All</button>
+                        </div>
                     </div>
                 </div>
+
+                <!-- About Card -->
+                <div class="settings-card about-card">
+                    <div class="brand-icon" style="background: var(--primary); color: var(--primary-invert); border-radius: 16px; display: flex; align-items: center; justify-content: center;"><i class="ph ph-wallet"></i></div>
+                    <h2>Wealthwise</h2>
+                    <p>Version 1.0.0 Pro<br>A seamless, private, local-first personal finance tracker.</p>
+                    <a href="about.html" class="btn-outline" style="margin-top: 16px; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 10px 24px; text-decoration: none;">
+                        <i class="ph ph-info"></i> More About App
+                    </a>
+                </div>
+
             </div>
         </div>
     </main>
 
+    <!-- Floating Mobile Bottom Navigation -->
     <div class="mobile-nav-dock">
         <nav class="mobile-floating-pill">
             <a href="index.html"><i class="ph ph-squares-four"></i><span>Overview</span></a>
@@ -94,28 +289,131 @@
             <a href="analysis.html"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a>
             <a href="settings.html" class="active"><i class="ph-fill ph-gear"></i><span>Settings</span></a>
         </nav>
+        <button onclick="window.location.href='about.html'" class="floating-fab-btn">
+            <i class="ph ph-info"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
+        <div class="bottom-sheet" id="menuSheet">
+            <div class="drag-handle-wrapper"><div class="drag-handle"></div></div>
+            <div class="sheet-header">
+                <h2>Menu</h2>
+                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="menu-list no-scrollbar" style="overflow-y: auto;">
+                <a href="index.html" class="menu-item"><i class="ph ph-activity"></i> Dashboard</a>
+                <a href="transaction.html" class="menu-item"><i class="ph ph-receipt"></i> Transactions</a>
+                <a href="analysis.html" class="menu-item"><i class="ph ph-chart-line-up"></i> Analytics</a>
+                <a href="settings.html" class="menu-item active"><i class="ph ph-gear"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="profileSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="profileSheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header">
+                <h2>Edit Profile</h2>
+                <button class="close-btn" id="closeProfileBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="editNameInput" placeholder="Enter your full name" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmDeleteOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="confirmDeleteSheet" style="max-width: 350px;">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header" style="margin-bottom: 12px;">
+                <h2 style="font-size: 18px; color: var(--dot-low);">Delete All Data?</h2>
+                <button class="close-btn" id="closeConfirmDeleteBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;">
+                Are you sure you want to permanently delete all your financial logs? This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button id="cancelDeleteBtn" class="btn-outline" style="flex: 1; justify-content: center;">Cancel</button>
+                <button id="executeDeleteBtn" class="btn-primary" style="flex: 1; justify-content: center; background: var(--status-bad-bg); color: var(--status-bad-text); border: 1px solid rgba(239,68,68,0.3);">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(150px); opacity: 0; background: var(--bg-dashboard); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 40px; box-shadow: var(--shadow-float); z-index: 10000; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;">
+        <i id="toastIcon" class="ph-fill ph-check-circle" style="color: #10b981; font-size: 20px;"></i>
+        <span id="toastMessage">Action successful</span>
     </div>
 
     <!-- Export Menu Modal -->
     <div id="exportSheetOverlay" class="sheet-overlay">
-        <div class="modal-card bottom-sheet">
+        <div class="modal-card bottom-sheet" id="exportSheet">
             <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
-            <div class="modal-header"><h2 style="font-size: 18px;">Export Data</h2></div>
-            <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;"><i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)</button>
+            <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+                <h2 style="font-size: 18px;">Export Data</h2>
+                <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Financial Report (PDF)
+                </button>
+                <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+                </button>
+                <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+                </button>
+            </div>
         </div>
     </div>
 
+    <script src="script.js"></script>
+
+    <!-- Settings Specific Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            const showToast = (message, isError = false) => {
+                const toast = document.getElementById('toastNotification');
+                const toastMsg = document.getElementById('toastMessage');
+                const toastIcon = document.getElementById('toastIcon');
+                
+                toastMsg.textContent = message;
+                if (isError) {
+                    toastIcon.className = 'ph-fill ph-warning-circle';
+                    toastIcon.style.color = '#ef4444';
+                } else {
+                    toastIcon.className = 'ph-fill ph-check-circle';
+                    toastIcon.style.color = '#10b981';
+                }
+
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+                toast.style.opacity = '1';
+                setTimeout(() => {
+                    toast.style.transform = 'translateX(-50%) translateY(150px)';
+                    toast.style.opacity = '0';
+                }, 3000);
+            };
+
+            // Currency Selector
             const selector = document.getElementById('currencySelector');
             if (selector) {
                 selector.value = localStorage.getItem('currency') || '$';
                 selector.addEventListener('change', (e) => {
                     localStorage.setItem('currency', e.target.value);
-                    if(window.WealthwiseGoogle) WealthwiseGoogle.notify('success', 'Saved', `Currency updated to ${e.target.value}`);
+                    showToast(`Currency updated to ${e.target.value}`);
                 });
             }
 
+            // Auto-Backup Toggle
             const toggle = document.getElementById('autoBackupToggle');
             if (toggle) {
                 toggle.checked = localStorage.getItem('ww_auto_backup') === 'true';
@@ -130,11 +428,135 @@
                 });
             }
 
-            document.getElementById('clearDataBtn')?.addEventListener('click', () => {
-                if(confirm("Are you sure? This cannot be undone.")) {
-                    localStorage.removeItem('financeTransactions');
-                    window.location.href = 'index.html';
+            // --- IMPORT JSON DATA LOGIC ---
+            const importInput = document.getElementById('importFileInput');
+            document.getElementById('importDataBtn')?.addEventListener('click', () => importInput.click());
+
+            importInput?.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const parsedData = JSON.parse(event.target.result);
+                        if (Array.isArray(parsedData)) {
+                            localStorage.setItem('financeTransactions', JSON.stringify(parsedData));
+                            showToast('Data imported successfully');
+                            
+                            // Auto trigger cloud sync if enabled
+                            if (window.WealthwiseGoogle && localStorage.getItem('ww_auto_backup') === 'true') {
+                                WealthwiseGoogle.saveToDrive(true);
+                            }
+                            
+                            setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+                        } else {
+                            showToast('Invalid JSON file format', true);
+                        }
+                    } catch (err) {
+                        showToast('Error reading the file', true);
+                    }
+                    importInput.value = '';
+                };
+                reader.readAsText(file);
+            });
+
+            // Profile Editor Logic
+            const editNameInput = document.getElementById('editNameInput');
+            const profileSheetOverlay = document.getElementById('profileSheetOverlay');
+            const profileSheet = document.getElementById('profileSheet');
+
+            const openProfileSheet = () => {
+                profileSheet.style.transform = ''; 
+                profileSheet.style.transition = '';
+                void profileSheet.offsetWidth; 
+                profileSheetOverlay.classList.add('active');
+                editNameInput.value = localStorage.getItem('userFullName') || localStorage.getItem('userName') || '';
+            };
+            
+            const closeProfileSheet = () => {
+                profileSheetOverlay.classList.remove('active');
+                setTimeout(() => { profileSheet.style.transform = ''; profileSheet.style.transition = ''; }, 300);
+            };
+
+            document.getElementById('openEditProfileBtn').addEventListener('click', openProfileSheet);
+            document.getElementById('closeProfileBtn').addEventListener('click', closeProfileSheet);
+            profileSheetOverlay.addEventListener('click', (e) => { if (e.target === profileSheetOverlay) closeProfileSheet(); });
+
+            // Profile Drag Physics
+            let pStartY = 0, pCurrentY = 0, pIsDragging = false;
+            profileSheet.addEventListener('touchstart', (e) => {
+                if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
+                    pStartY = e.touches[0].clientY; pIsDragging = true; profileSheet.style.transition = 'none';
                 }
+            }, { passive: true });
+            profileSheet.addEventListener('touchmove', (e) => {
+                if (!pIsDragging) return; pCurrentY = e.touches[0].clientY;
+                if (pCurrentY - pStartY > 0) profileSheet.style.transform = `translateY(${pCurrentY - pStartY}px)`;
+            }, { passive: true });
+            profileSheet.addEventListener('touchend', () => {
+                if (!pIsDragging) return; pIsDragging = false;
+                profileSheet.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+                if (pCurrentY - pStartY > 80) closeProfileSheet(); else profileSheet.style.transform = 'translateY(0)';
+            });
+
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = editNameInput.value.trim();
+                if (newName) {
+                    localStorage.setItem('userName', newName.split(' ')[0]);
+                    localStorage.setItem('userFullName', newName);
+                    document.documentElement.classList.add('has-user');
+                    document.getElementById('displayUserFullName').textContent = newName;
+                    if (typeof WealthwiseGoogle !== 'undefined') WealthwiseGoogle.updateUI();
+                    closeProfileSheet();
+                    showToast('Profile updated successfully');
+                }
+            });
+
+            // Confirm Delete Logic
+            const confirmDeleteOverlay = document.getElementById('confirmDeleteOverlay');
+            const confirmDeleteSheet = document.getElementById('confirmDeleteSheet');
+
+            const openConfirmDelete = () => {
+                confirmDeleteSheet.style.transform = ''; confirmDeleteSheet.style.transition = '';
+                void confirmDeleteSheet.offsetWidth; confirmDeleteOverlay.classList.add('active');
+            };
+            const closeConfirmDelete = () => {
+                confirmDeleteOverlay.classList.remove('active');
+                setTimeout(() => { confirmDeleteSheet.style.transform = ''; confirmDeleteSheet.style.transition = ''; }, 300);
+            };
+
+            document.getElementById('clearDataBtn').addEventListener('click', openConfirmDelete);
+            document.getElementById('closeConfirmDeleteBtn').addEventListener('click', closeConfirmDelete);
+            document.getElementById('cancelDeleteBtn').addEventListener('click', closeConfirmDelete);
+            confirmDeleteOverlay.addEventListener('click', (e) => { if (e.target === confirmDeleteOverlay) closeConfirmDelete(); });
+
+            document.getElementById('executeDeleteBtn').addEventListener('click', () => {
+                localStorage.removeItem('financeTransactions');
+                closeConfirmDelete();
+                showToast('All data has been deleted');
+                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+            });
+
+            let delStartY = 0, delCurrentY = 0, isDelDragging = false;
+            confirmDeleteSheet.addEventListener('touchstart', (e) => {
+                if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
+                    delStartY = e.touches[0].clientY; isDelDragging = true; confirmDeleteSheet.style.transition = 'none';
+                }
+            }, { passive: true });
+            confirmDeleteSheet.addEventListener('touchmove', (e) => {
+                if (!isDelDragging) return; delCurrentY = e.touches[0].clientY;
+                if (delCurrentY - delStartY > 0) confirmDeleteSheet.style.transform = `translateY(${delCurrentY - delStartY}px)`;
+            }, { passive: true });
+            confirmDeleteSheet.addEventListener('touchend', () => {
+                if (!isDelDragging) return; isDelDragging = false;
+                confirmDeleteSheet.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+                if (delCurrentY - delStartY > 80) closeConfirmDelete(); else confirmDeleteSheet.style.transform = 'translateY(0)';
+            });
+            
+            // Link Export List Button
+            document.getElementById('openExportBtnList')?.addEventListener('click', () => {
+                document.getElementById('openExportBtn')?.click();
             });
         });
     </script>
