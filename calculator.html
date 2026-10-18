@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Smart Calculator - Wealthwise Pro</title>
+    
+    <script>
+        // const savedTheme = localStorage.getItem('theme') || 'system';
+        // const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        // document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        // if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        // if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+                const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+    </script>
+    <script src="theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="load-page.js"></script>
+    <script src="google.js"></script>
+    <script src="script.js"></script>
+    <script src="export.js"></script>
+
+    <style>
+        .calc-page-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 90px;
+        }
+
+        /* Mode Switcher Tabs */
+        .calc-mode-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .calc-mode-tabs::-webkit-scrollbar { display: none; }
+        .calc-tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .calc-tab-btn.active {
+            background: var(--primary);
+            color: var(--primary-invert);
+            border-color: var(--primary);
+        }
+
+        /* Helper Buttons & Chips */
+        .ft-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+        .ft-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .cat-chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dashboard);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.15s ease;
+            white-space: nowrap;
+        }
+        .cat-chip:hover {
+            color: var(--text-main);
+            background: var(--bg-hover);
+        }
+        .cat-chip.active {
+            background: var(--primary);
+            color: var(--primary-invert);
+            border-color: var(--primary);
+        }
+
+        /* Main Split Layout (Desktop) */
+        .calc-workspace {
+            display: grid;
+            grid-template-columns: 390px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Standard Calculator Card */
+        .std-calc-card {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card, 16px);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .calc-screen {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 96px;
+            justify-content: flex-end;
+            word-break: break-all;
+        }
+        .calc-expr {
+            font-size: 13px;
+            color: var(--text-muted);
+            min-height: 18px;
+            font-family: monospace;
+        }
+        .calc-result-display {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .calc-keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .calc-key {
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dashboard);
+            color: var(--text-main);
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease, background 0.15s ease;
+            user-select: none;
+        }
+        .calc-key:hover {
+            background: var(--bg-hover);
+        }
+        .calc-key:active {
+            transform: scale(0.95);
+        }
+        .calc-key.op-key {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.08);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        .calc-key.danger-key {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        .calc-quick-save {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border-color);
+        }
+        .btn-save-inc, .btn-save-exp {
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        .btn-save-inc {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+        .btn-save-exp {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Mobile Quick Summary Bar inside Calculator Card */
+        .mobile-sel-preview {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        /* Desktop Wrapper for Selector vs Mobile Bottom Sheet */
+        .selector-sheet-wrapper {
+            display: block;
+            width: 100%;
+        }
+
+        /* Right Panel: Transaction Selector & Custom Builder */
+        .selector-calc-card {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card, 16px);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .sel-summary-banner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background: var(--bg-hover);
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .sel-stat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .sel-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .sel-stat-val {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Custom Numbers Adder */
+        .custom-num-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .custom-num-bar input, .custom-num-bar select {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dashboard);
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+        }
+        .custom-num-bar input[type="text"] { flex: 1; min-width: 130px; }
+        .custom-num-bar input[type="number"] { width: 125px; }
+
+        /* Selectable Transaction List */
+        .sel-tx-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .sel-tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 2px;
+            flex: 1;
+        }
+        .sel-tx-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dashboard);
+            cursor: pointer;
+            transition: 0.15s ease;
+            flex-shrink: 0;
+        }
+        .sel-tx-item:hover {
+            background: var(--bg-hover);
+        }
+        .sel-tx-item.selected {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+        .sel-tx-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+        .sel-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .tx-mini-action {
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-canvas);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .tx-mini-action:hover {
+            color: var(--text-main);
+            border-color: var(--primary);
+        }
+
+        /* Financial Tools Grid (VAT/Discount & Loan EMI) */
+        .fin-tools-grid {
+            display: none;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .fin-tools-grid.active {
+            display: grid;
+        }
+        .fin-tool-card {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .calc-history-tape {
+            max-height: 130px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+        .tape-item {
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+        }
+        .tape-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-main);
+        }
+
+        /* Floating FAB Badge on Mobile */
+        .fab-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            border-radius: 10px;
+            background: #10b981;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-canvas);
+        }
+
+        @media (max-width: 960px) {
+            .calc-workspace {
+                grid-template-columns: 1fr;
+            }
+            .sel-summary-banner {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .fin-tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- MOBILE FULL-SIZE DRAGGABLE BOTTOM SHEET FOR SELECTOR --- */
+        @media (max-width: 768px) {
+            .mobile-sel-preview {
+                display: flex;
+            }
+
+            .selector-sheet-wrapper {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.55);
+                backdrop-filter: blur(4px);
+                z-index: 1000;
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.25s ease, visibility 0.25s ease;
+            }
+
+            .selector-sheet-wrapper.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .selector-calc-card.bottom-sheet {
+                width: 100%;
+                max-width: 100%;
+                height: 92vh;
+                max-height: 92vh;
+                border-radius: 28px 28px 0 0;
+                background: var(--bg-dashboard);
+                padding: 20px 16px calc(24px + env(safe-area-inset-bottom)) 16px;
+                border: none;
+                box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.3);
+                transform: translateY(100%);
+                transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                gap: 12px;
+            }
+
+            .selector-sheet-wrapper.active .selector-calc-card.bottom-sheet {
+                transform: translateY(0);
+            }
+
+            .sel-tx-list {
+                max-height: none;
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .custom-num-bar input[type="number"] {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Welcome Modal (With Name & Initial Capital Setup) -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-wallet"></i></div>
+            <h2>Welcome to Wealthwise</h2>
+            <p>Set up your profile and initial funds to start tracking.</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <input type="number" id="balanceInput" placeholder="Current Account Balance (e.g. 37000)" required step="0.01">
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">Get Started</button>
+            </form>
+        </div>
+    </div>
+
+      <!-- Mobile Top Bar -->
+    <header class="mobile-header">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-wallet"></i></div>
+            <span class="brand-text">Wealthwise</span>
+        </div>
+        <div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+            <!-- Mobile Export Button -->
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
+                <i class="ph ph-export"></i>
+            </button>
+            
+            <div class="theme-dropdown-container">
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+            
+            <!-- Mobile Google Drive Dropdown -->
+            <div class="drive-dropdown-container">
+                <button id="mobileDriveBtn" class="icon-btn user-avatar-target" title="Google Drive" style="width: 32px; height: 32px; padding: 0; border: 1px solid transparent;">
+                    <i class="ph ph-google-logo"></i>
+                </button>
+                <div class="drive-dropdown-menu" id="mobileDriveMenu">
+                    <div class="drive-menu-opt" id="mobileDriveStatus" style="pointer-events: none; border-bottom: 1px solid var(--border-color); border-radius: 0; padding-bottom: 8px; margin-bottom: 4px; font-size: 13px;">
+                        <i class="ph ph-warning-circle" style="color: #eab308;"></i> Not Connected
+                    </div>
+                    <a href="#" class="drive-menu-opt" id="mobileDriveAuthBtn" onclick="WealthwiseGoogle.signIn(); return false;">
+                        <i class="ph ph-link"></i> Connect
+                    </a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.saveToDrive(); return false;">
+                        <i class="ph ph-cloud-arrow-up"></i> Backup Data
+                    </a>
+                    <a href="#" class="drive-menu-opt" onclick="WealthwiseGoogle.loadFromDrive(); return false;">
+                        <i class="ph ph-cloud-arrow-down"></i> Restore Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-wallet"></i></div>
+                <span class="brand-text">Wealthwise</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="dashboard" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="transaction" class="nav-item"><i class="ph ph-receipt"></i> <span>Transactions</span></a>
+                <a href="calculator" class="nav-item active"><i class="ph-fill ph-calculator"></i> <span>Calculator</span></a>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items">
+                <a href="settings" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+            <!-- <div class="sidebar-profile-wrapper">
+                <div class="user-avatar-target"><i class="ph ph-user"></i></div>
+                <div class="profile-text-container">
+                    <span class="profile-name" id="sidebarProfileName">Account</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">Calculator Ready</span>
+                </div>
+            </div>
+        </div>
+    </aside> -->
+            <div class="sidebar-profile-wrapper">
+                <div class="user-avatar-target">
+                    <i class="ph ph-user"></i>
+                </div>
+                <div class="profile-text-container">
+                    <span class="profile-name" id="sidebarProfileName">Account</span>
+                    <button class="sidebar-connect-btn" id="sidebarGoogleBtn" onclick="WealthwiseGoogle.signIn()">Connect Drive</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Smart Financial Calculator</h1>
+                    <p>Calculate custom expressions, select income & expenses, or run tax & loan math.</p>
+                </div>
+                  <div class="header-actions">
+                    <button class="btn-outline desktop-only" id="googleSyncBtn" onclick="WealthwiseGoogle.signIn()">
+                        <i class="ph ph-google-logo"></i> Connect Drive
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.saveToDrive()" title="Backup to Drive">
+                        <i class="ph ph-cloud-arrow-up"></i>
+                    </button>
+                    <button class="btn-outline desktop-only" onclick="WealthwiseGoogle.loadFromDrive()" title="Restore from Drive">
+                        <i class="ph ph-cloud-arrow-down"></i>
+                    </button>
+
+                    <button class="btn-outline desktop-only" onclick="window.location.reload();">
+                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+                    </button>
+                    <button class="btn-outline desktop-only" id="openExportBtn">
+                        <i class="ph ph-export"></i> Export
+                    </button>
+                    <button class="btn-primary desktop-only"  onclick="window.location.href='dashboard';"">
+                        <i class="ph ph-squares-four"></i> Go to Dashboard
+                    </button>
+                </div>
+            </header>
+
+            <!-- <div class="calc-page-container"> -->
+                <!-- Mode Switcher -->
+                <!-- <div class="calc-mode-tabs">
+                    <button class="calc-tab-btn active" onclick="switchCalcTab('main', this)">
+                        <i class="ph-fill ph-calculator"></i> Standard & Income/Expense Selector
+                    </button>
+                    <button class="calc-tab-btn" onclick="switchCalcTab('tools', this)">
+                        <i class="ph-fill ph-percent"></i> Tax / Discount & Loan Planner
+                    </button>
+                </div> -->
+
+                <!-- TAB 1: Standard Keypad + Interactive Transaction Selector -->
+                <div class="calc-workspace" id="calcMainView">
+                    
+                    <!-- Left: Standard & Custom Expression Calculator -->
+                    <div class="std-calc-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap: 6px; flex-wrap: wrap;">
+                            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">CALCULATOR PAD</span>
+                            <div style="display:flex; gap: 6px;">
+                                <button class="ft-btn" type="button" onclick="useSelectedNetInCalc()" title="Send Selected Net to Calculator">Use Selected Net</button>
+                                <button class="ft-btn" type="button" onclick="sendResultToCustomList()" title="Add result to selector list">+ To List</button>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Tap Bar to Open Full-Size Income/Expense Selector Sheet -->
+                        <div class="mobile-sel-preview" onclick="window.openSelectorSheet()">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <i class="ph-fill ph-list-checks" style="font-size:20px; color:var(--primary);"></i>
+                                <div>
+                                    <div style="font-size:12px; font-weight:600; color:var(--text-main);">Select Income & Expenses</div>
+                                    <div style="font-size:11px; color:var(--text-muted);" id="mobilePreviewCount">0 selected • Tap to open menu</div>
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Selected Net</div>
+                                <div style="font-size:14px; font-weight:700;" id="mobilePreviewNet">$0.00</div>
+                            </div>
+                        </div>
+
+                        <div class="calc-screen">
+                            <div class="calc-expr" id="calcExprDisplay">0</div>
+                            <div class="calc-result-display" id="calcMainDisplay">0</div>
+                        </div>
+
+                        <div class="calc-keypad">
+                            <button class="calc-key danger-key" type="button" onclick="calcInput('C')">C</button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('(')">( )</button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('%')">%</button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('/')">÷</button>
+
+                            <button class="calc-key" type="button" onclick="calcInput('7')">7</button>
+                            <button class="calc-key" type="button" onclick="calcInput('8')">8</button>
+                            <button class="calc-key" type="button" onclick="calcInput('9')">9</button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('*')">×</button>
+
+                            <button class="calc-key" type="button" onclick="calcInput('4')">4</button>
+                            <button class="calc-key" type="button" onclick="calcInput('5')">5</button>
+                            <button class="calc-key" type="button" onclick="calcInput('6')">6</button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('-')">−</button>
+
+                            <button class="calc-key" type="button" onclick="calcInput('1')">1</button>
+                            <button class="calc-key" type="button" onclick="calcInput('2')">2</button>
+                            <button class="calc-key" type="button" onclick="calcInput('3')">3</button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('+')">+</button>
+
+                            <button class="calc-key" type="button" onclick="calcInput('0')">0</button>
+                            <button class="calc-key" type="button" onclick="calcInput('.')">.</button>
+                            <button class="calc-key" type="button" onclick="calcInput('BACK')"><i class="ph ph-backspace"></i></button>
+                            <button class="calc-key op-key" type="button" onclick="calcInput('=')" style="background:var(--primary); color:var(--primary-invert);">=</button>
+                        </div>
+
+                        <!-- Save Calculated Result Directly as Income or Expense -->
+                        <!-- <div class="calc-quick-save">
+                            <button class="btn-save-inc" type="button" onclick="saveCalcAsTransaction('income')">
+                                <i class="ph-bold ph-plus-circle"></i> Save as Income
+                            </button>
+                            <button class="btn-save-exp" type="button" onclick="saveCalcAsTransaction('expense')">
+                                <i class="ph-bold ph-minus-circle"></i> Save as Expense
+                            </button>
+                        </div> -->
+
+                        <!-- <div class="calc-history-tape" id="calcTape">
+                            <div style="text-align:center; font-size:11px;">Calculation history appears here (tap any row to reuse)</div>
+                        </div> -->
+                    </div>
+
+                    <!-- Right (Desktop) / Full-Size Draggable Bottom Sheet (Mobile): Income & Expense Selector -->
+                    <div id="selectorSheetOverlay" class="selector-sheet-wrapper">
+                        <div class="selector-calc-card bottom-sheet" id="selectorSheet">
+                            <!-- Mobile Drag Handle -->
+                            <div class="drag-handle-wrapper mobile-only" id="selectorDragHandle">
+                                <div class="drag-handle"></div>
+                            </div>
+
+                            <div class="sheet-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0;">
+                                <div>
+                                    <h3 style="font-size:16px; margin:0;">Select Income & Expenses (Optional)</h3>
+                                    <p style="font-size:12px; color:var(--text-muted); margin:2px 0 0;">Check any Income or Expense items to calculate Net Balance & Uncovered Expenses.</p>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:6px; flex-wrap: wrap;">
+                                    <button class="ft-btn" type="button" onclick="toggleSelectByType('income')">+ Income</button>
+                                    <button class="ft-btn" type="button" onclick="toggleSelectByType('expense')">- Expenses</button>
+                                    <button class="ft-btn" type="button" onclick="toggleSelectAllTx(true)">All</button>
+                                    <button class="ft-btn" type="button" onclick="toggleSelectAllTx(false)">Clear</button>
+                                    <button class="close-btn mobile-only" id="closeSelectorSheetBtn" type="button" style="margin-left:4px;"><i class="ph ph-x"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Live Calculation Banner -->
+                            <div class="sel-summary-banner">
+                                <div class="sel-stat-box">
+                                    <span class="sel-stat-label">Selected Income</span>
+                                    <span class="sel-stat-val" id="selIncVal" style="color:var(--income-green);">$0.00</span>
+                                </div>
+                                <div class="sel-stat-box">
+                                    <span class="sel-stat-label">Selected Expenses</span>
+                                    <span class="sel-stat-val" id="selExpVal" style="color:var(--expense-red);">$0.00</span>
+                                </div>
+                                <div class="sel-stat-box">
+                                    <span class="sel-stat-label">Net (Inc − Exp)</span>
+                                    <span class="sel-stat-val" id="selNetVal">$0.00</span>
+                                </div>
+                                <div class="sel-stat-box">
+                                    <span class="sel-stat-label">Uncovered Exp</span>
+                                    <span class="sel-stat-val" id="selAbsSumVal" style="color:#3b82f6;">$0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Add Custom Number Row (Optional) -->
+                            <div class="custom-num-bar">
+                                <select id="customItemType">
+                                    <option value="expense">Expense (-)</option>
+                                    <option value="income">Income (+)</option>
+                                </select>
+                                <input type="text" id="customItemLabel" placeholder="Optional label (e.g. Bonus, Rent)...">
+                                <input type="number" id="customItemAmount" placeholder="Amount (0.00)" step="0.01">
+                                <button class="btn-primary" type="button" onclick="addCustomCalcItem()" style="padding:10px 14px;">
+                                    <i class="ph ph-plus"></i> Add
+                                </button>
+                            </div>
+
+                            <!-- Filter Pills for Selector -->
+                            <div class="sel-tx-controls">
+                                <div class="r-filter-pills" style="display:flex; gap:6px; overflow-x:auto; max-width:100%;">
+                                    <button class="cat-chip active" type="button" onclick="filterCalcTx('all', this)">All (<span id="countAll">0</span>)</button>
+                                    <button class="cat-chip" type="button" onclick="filterCalcTx('income', this)">Income (<span id="countInc">0</span>)</button>
+                                    <button class="cat-chip" type="button" onclick="filterCalcTx('expense', this)">Expenses (<span id="countExp">0</span>)</button>
+                                    <button class="cat-chip" type="button" onclick="filterCalcTx('custom', this)">Custom (<span id="countCust">0</span>)</button>
+                                </div>
+                                <span style="font-size:12px; font-weight:600; color:var(--text-muted);" id="selCountBadge">0 selected</span>
+                            </div>
+
+                            <!-- Interactive List -->
+                            <div class="sel-tx-list no-scrollbar" id="calcSelectableList"></div>
+
+                            <!-- Mobile Bottom Action Button inside Sheet -->
+                            <button type="button" class="btn-primary mobile-only" style="width:100%; justify-content:center; padding:12px; flex-shrink:0;" onclick="useSelectedNetInCalc(); window.closeSelectorSheet();">
+                                <i class="ph-bold ph-calculator"></i> Send Selected Net to Calculator Pad
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TAB 2: Quick Financial Tools (Tax/Discount & Loan Calculator) -->
+                <div class="fin-tools-grid" id="calcToolsView">
+                    <!-- Tax & Discount Calculator -->
+                    <div class="fin-tool-card">
+                        <h3 style="margin:0; font-size:16px;"><i class="ph-fill ph-tag" style="color:#10b981;"></i> Discount & VAT / Tax Calculator</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Original Amount</label>
+                                <input type="number" id="tdAmount" placeholder="1000" step="0.01" oninput="runTaxDiscountCalc()">
+                            </div>
+                            <div class="form-group">
+                                <label>Discount (%)</label>
+                                <input type="number" id="tdDiscount" placeholder="10" step="0.1" oninput="runTaxDiscountCalc()">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tax / VAT (%)</label>
+                            <input type="number" id="tdTax" placeholder="14" step="0.1" oninput="runTaxDiscountCalc()">
+                        </div>
+                        <div class="sel-summary-banner" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="sel-stat-box">
+                                <span class="sel-stat-label">You Save</span>
+                                <span class="sel-stat-val" id="tdSavedVal" style="color:#10b981;">$0.00</span>
+                            </div>
+                            <div class="sel-stat-box">
+                                <span class="sel-stat-label">Tax Added</span>
+                                <span class="sel-stat-val" id="tdTaxVal" style="color:#eab308;">$0.00</span>
+                            </div>
+                            <div class="sel-stat-box">
+                                <span class="sel-stat-label">Final Price</span>
+                                <span class="sel-stat-val" id="tdFinalVal">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan / Installment (EMI) Calculator -->
+                    <div class="fin-tool-card">
+                        <h3 style="margin:0; font-size:16px;"><i class="ph-fill ph-bank" style="color:#3b82f6;"></i> Loan & Monthly Installment Calculator</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Loan / Purchase Amount</label>
+                                <input type="number" id="loanPrincipal" placeholder="50000" step="100" oninput="runLoanCalc()">
+                            </div>
+                            <div class="form-group">
+                                <label>Annual Interest Rate (%)</label>
+                                <input type="number" id="loanRate" placeholder="15" step="0.1" oninput="runLoanCalc()">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (Months)</label>
+                            <input type="number" id="loanMonths" placeholder="12" step="1" oninput="runLoanCalc()">
+                        </div>
+                        <div class="sel-summary-banner" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="sel-stat-box">
+                                <span class="sel-stat-label">Monthly Payment</span>
+                                <span class="sel-stat-val" id="loanMonthlyVal" style="color:#3b82f6;">$0.00</span>
+                            </div>
+                            <div class="sel-stat-box">
+                                <span class="sel-stat-label">Total Interest</span>
+                                <span class="sel-stat-val" id="loanInterestVal" style="color:var(--expense-red);">$0.00</span>
+                            </div>
+                            <div class="sel-stat-box">
+                                <span class="sel-stat-label">Total Payback</span>
+                                <span class="sel-stat-val" id="loanTotalVal">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+
+        <!-- Export Menu Modal (Draggable) -->
+    <div id="exportSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="exportSheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+                <h2 style="font-size: 18px;">Export Data</h2>
+                <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Financial Report (PDF)
+                </button>
+                <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+                </button>
+                <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                    <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Mobile Bottom Navigation + Floating FAB Button (Like Dashboard) -->
+    <div class="mobile-nav-dock">
+        <nav class="mobile-floating-pill">
+            <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <a href="transaction"><i class="ph ph-receipt"></i><span>Transactions</span></a>
+            <a href="calculator" class="active"><i class="ph-fill ph-calculator"></i><span>Calculator</span></a>
+            <a href="settings"><i class="ph ph-gear"></i><span>Settings</span></a>
+        </nav>
+        <button id="mobileSelectorFabBtn" class="floating-fab-btn" type="button" title="Select Income & Expenses" onclick="window.openSelectorSheet()" style="position:relative;">
+            <i class="ph-bold ph-list-checks"></i>
+            <span class="fab-badge" id="fabSelectedBadge">0</span>
+        </button>
+    </div>
+<script src="script.js"></script>
+    <!-- ALL JAVASCRIPT PROCESSED IN THE SAME PAGE -->
+    <script>
+        // --- 1. SELF-CONTAINED CURRENCY, THEME, SIDEBAR & DRAGGABLE SHEET ---
+        window.getCurrency = () => localStorage.getItem('currency') || '$';
+        window.formatMoney = (amount) => {
+            const sym = window.getCurrency();
+            const val = parseFloat(amount) || 0;
+            const formatted = Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const sign = val < 0 ? '-' : '';
+            return sym === 'EGP' ? `${sign}${formatted} EGP` : `${sign}${sym}${formatted}`;
+        };
+
+        (function initPageUI() {
+            const savedFirstName = localStorage.getItem('userName') || 'Account';
+            const profileEl = document.getElementById('sidebarProfileName');
+            if (profileEl) profileEl.textContent = savedFirstName;
+
+            const applyTheme = (themeVal) => {
+                if (window.ThemeManager && typeof window.ThemeManager.setTheme === 'function') {
+                    window.ThemeManager.setTheme(themeVal);
+                } else {
+                    localStorage.setItem('theme', themeVal);
+                    const isDark = themeVal === 'dark' || (themeVal === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                }
+                document.querySelectorAll('.theme-btn, .theme-menu-opt').forEach(el => {
+                    el.classList.toggle('active', el.getAttribute('data-theme-val') === themeVal);
+                });
+            };
+
+            // applyTheme(localStorage.getItem('theme') || 'system');
+
+            // document.querySelectorAll('.theme-btn, .theme-menu-opt').forEach(el => {
+            //     el.addEventListener('click', (e) => {
+            //         e.preventDefault();
+            //         applyTheme(el.getAttribute('data-theme-val'));
+            //         document.getElementById('themeIconMenu')?.classList.remove('show');
+            //     });
+            // });
+
+            // const themeIconBtn = document.getElementById('themeIconBtn');
+            // const themeIconMenu = document.getElementById('themeIconMenu');
+            // if (themeIconBtn && themeIconMenu) {
+            //     themeIconBtn.addEventListener('click', (e) => {
+            //         e.preventDefault();
+            //         e.stopPropagation();
+            //         themeIconMenu.classList.toggle('show');
+            //     });
+            //     document.addEventListener('click', (e) => {
+            //         if (!themeIconBtn.contains(e.target) && !themeIconMenu.contains(e.target)) {
+            //             themeIconMenu.classList.remove('show');
+            //         }
+            //     });
+            // }
+
+            // const sidebarToggle = document.getElementById('sidebarToggle');
+            // if (sidebarToggle) {
+            //     sidebarToggle.addEventListener('click', () => {
+            //         document.documentElement.classList.toggle('sidebar-collapsed');
+            //         localStorage.setItem('sidebarCollapsed', document.documentElement.classList.contains('sidebar-collapsed'));
+            //     });
+            // }
+
+            // Full-Size Mobile Draggable Bottom Sheet Logic for Income/Expense Selector
+            const overlay = document.getElementById('selectorSheetOverlay');
+            const sheet = document.getElementById('selectorSheet');
+            const closeBtn = document.getElementById('closeSelectorSheetBtn');
+            let startY = 0, currentY = 0, isDragging = false;
+
+            window.openSelectorSheet = (e) => {
+                if (e) e.preventDefault();
+                if (window.innerWidth > 768) return;
+                sheet.style.transform = '';
+                void sheet.offsetWidth;
+                overlay.classList.add('active');
+            };
+
+            window.closeSelectorSheet = () => {
+                overlay.classList.remove('active');
+                setTimeout(() => { sheet.style.transform = ''; }, 300);
+            };
+
+            if (closeBtn) closeBtn.addEventListener('click', window.closeSelectorSheet);
+            if (overlay) {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay && window.innerWidth <= 768) {
+                        window.closeSelectorSheet();
+                    }
+                });
+            }
+
+            if (sheet) {
+                sheet.addEventListener('touchstart', (e) => {
+                    if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
+                        startY = e.touches[0].clientY;
+                        currentY = startY;
+                        isDragging = true;
+                        sheet.style.transition = 'none';
+                    }
+                }, { passive: true });
+
+                sheet.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    currentY = e.touches[0].clientY;
+                    const deltaY = currentY - startY;
+                    if (deltaY > 0) {
+                        window.requestAnimationFrame(() => {
+                            sheet.style.transform = `translateY(${deltaY}px)`;
+                        });
+                    }
+                }, { passive: true });
+
+                sheet.addEventListener('touchend', () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    sheet.style.transition = 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)';
+                    if (currentY - startY > 90) {
+                        window.closeSelectorSheet();
+                    } else {
+                        sheet.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+        })();
+
+        // --- 2. SMART CALCULATOR ENGINE ---
+        let calcExpr = '';
+        let lastResult = 0;
+        let calcFilter = 'all';
+        let customCalcItems = [];
+        let selectedItemIds = new Set();
+        let lastSelectedNet = 0;
+
+        const exprEl = document.getElementById('calcExprDisplay');
+        const mainEl = document.getElementById('calcMainDisplay');
+        const tapeEl = document.getElementById('calcTape');
+
+        function switchCalcTab(tab, btn) {
+            document.querySelectorAll('.calc-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('calcMainView').style.display = tab === 'main' ? 'grid' : 'none';
+            document.getElementById('calcToolsView').classList.toggle('active', tab === 'tools');
+        }
+
+        function safeEval(expr) {
+            try {
+                const sanitized = String(expr)
+                    .replace(/[^0-9+\-*/.%()]/g, '')
+                    .replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+                if (!sanitized) return 0;
+                const val = Function('"use strict"; return (' + sanitized + ')')();
+                return isFinite(val) ? val : 0;
+            } catch {
+                return null;
+            }
+        }
+
+        function calcInput(key) {
+            if (key === 'C') {
+                calcExpr = '';
+                lastResult = 0;
+                exprEl.textContent = '0';
+                mainEl.textContent = '0';
+                return;
+            }
+            if (key === 'BACK') {
+                calcExpr = calcExpr.slice(0, -1);
+            } else if (key === '(') {
+                // const openCount = (calcExpr.match(/\(/g) \vert{}\vert{} []).length; const closeCount = (calcExpr.match(/\)/g) || []).length;
+                const openCount = (calcExpr.match(/\(/g) || []).length; 
+const closeCount = (calcExpr.match(/\)/g) || []).length;
+                calcExpr += openCount > closeCount ? ')' : '(';
+            } else if (key === '=') {
+                const res = safeEval(calcExpr);
+                if (res !== null) {
+                    addTapeRecord(calcExpr || '0', res);
+                    lastResult = res;
+                    exprEl.textContent = (calcExpr || '0') + ' =';
+                    calcExpr = String(Number(res.toFixed(2)));
+                    mainEl.textContent = window.formatMoney(res);
+                }
+                return;
+            } else {
+                calcExpr += key;
+            }
+
+            exprEl.textContent = calcExpr || '0';
+            const live = safeEval(calcExpr);
+            if (live !== null) {
+                lastResult = live;
+                mainEl.textContent = Number(live.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+            }
+        }
+
+        function pushAmountToPad(amount, operator) {
+            const cleanNum = Number(Math.abs(amount).toFixed(2));
+            if (!calcExpr || calcExpr === '0') {
+                calcExpr = operator === '-' ? `-${cleanNum}` : `${cleanNum}`;
+            } else {
+                calcExpr += `${operator}${cleanNum}`;
+            }
+            exprEl.textContent = calcExpr;
+            const live = safeEval(calcExpr);
+            if (live !== null) {
+                lastResult = live;
+                mainEl.textContent = window.formatMoney(live);
+            }
+        }
+
+        function useSelectedNetInCalc() {
+            calcExpr = String(Number(lastSelectedNet.toFixed(2)));
+            lastResult = lastSelectedNet;
+            exprEl.textContent = calcExpr;
+            mainEl.textContent = window.formatMoney(lastSelectedNet);
+        }
+
+        function addTapeRecord(expr, res) {
+            if (tapeEl.querySelector('div[style]')) tapeEl.innerHTML = '';
+            const row = document.createElement('div');
+            row.className = 'tape-item';
+            row.innerHTML = `<span>${expr}</span><strong>= ${window.formatMoney(res)}</strong>`;
+            row.onclick = () => {
+                calcExpr = String(Number(res.toFixed(2)));
+                lastResult = res;
+                exprEl.textContent = calcExpr;
+                mainEl.textContent = window.formatMoney(res);
+            };
+            tapeEl.prepend(row);
+        }
+
+        function saveCalcAsTransaction(type) {
+            const val = Math.abs(parseFloat(lastResult));
+            if (!val || val <= 0) {
+                alert('Calculate a non-zero amount first!');
+                return;
+            }
+            const defaultCat = type === 'income' ? 'Salary' : 'Expense';
+            const cat = prompt(`Enter category to save ${window.formatMoney(val)} as ${type.toUpperCase()}:`, defaultCat);
+            if (!cat) return;
+
+            const now = new Date();
+            const txList = JSON.parse(localStorage.getItem('financeTransactions')) || [];
+            const newIdx = txList.length;
+            txList.push({
+                date: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
+                time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+                type: type,
+                amount: val,
+                category: cat.trim(),
+                notes: `Saved from Smart Calculator (${calcExpr || val})`
+            });
+            localStorage.setItem('financeTransactions', JSON.stringify(txList));
+            selectedItemIds.add('tx_' + newIdx);
+            renderSelectableTransactions();
+        }
+
+        function sendResultToCustomList() {
+            const val = parseFloat(lastResult);
+            if (!val || val === 0) return;
+            const id = 'cust_' + Date.now();
+            customCalcItems.unshift({
+                id,
+                type: val >= 0 ? 'income' : 'expense',
+                amount: Math.abs(val),
+                category: 'Calculator Result',
+                notes: calcExpr,
+                date: 'Custom',
+                isCustom: true
+            });
+            selectedItemIds.add(id);
+            renderSelectableTransactions();
+            if (window.innerWidth <= 768) window.openSelectorSheet();
+        }
+
+        // --- 3. TRANSACTION SELECTOR (INCOME & EXPENSE) & OPTIONAL CUSTOM ITEMS ---
+        function getCombinedSelectableItems() {
+            const savedTx = JSON.parse(localStorage.getItem('financeTransactions')) || [];
+            const mappedSaved = savedTx.map((t, idx) => ({
+                id: 'tx_' + idx,
+                type: t.type === 'income' ? 'income' : 'expense',
+                amount: parseFloat(t.amount) || 0,
+                category: t.category || 'General',
+                notes: t.notes || '',
+                date: t.date || '',
+                isCustom: false
+            })).reverse();
+            return [...customCalcItems, ...mappedSaved];
+        }
+
+        function addCustomCalcItem() {
+            const type = document.getElementById('customItemType').value;
+            const label = document.getElementById('customItemLabel').value.trim() || (type === 'income' ? 'Optional Income' : 'Optional Expense');
+            const amount = parseFloat(document.getElementById('customItemAmount').value);
+            if (isNaN(amount) || amount <= 0) return;
+
+            const id = 'cust_' + Date.now();
+            customCalcItems.unshift({
+                id,
+                type,
+                amount,
+                category: label,
+                notes: 'Optional calculation item',
+                date: 'Custom',
+                isCustom: true
+            });
+            selectedItemIds.add(id);
+            document.getElementById('customItemLabel').value = '';
+            document.getElementById('customItemAmount').value = '';
+            renderSelectableTransactions();
+        }
+
+        function deleteCustomItem(id, event) {
+            event.stopPropagation();
+            customCalcItems = customCalcItems.filter(item => item.id !== id);
+            selectedItemIds.delete(id);
+            renderSelectableTransactions();
+        }
+
+        function filterCalcTx(filter, btn) {
+            calcFilter = filter;
+            btn.parentElement.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            renderSelectableTransactions();
+        }
+
+        function toggleSelectByType(type) {
+            const allItems = getCombinedSelectableItems();
+            allItems.forEach(item => {
+                if (item.type === type) selectedItemIds.add(item.id);
+            });
+            renderSelectableTransactions();
+        }
+
+        function toggleSelectAllTx(selectAll) {
+            const allItems = getCombinedSelectableItems();
+            if (!selectAll) {
+                selectedItemIds.clear();
+            } else {
+                allItems.forEach(item => {
+                    if (calcFilter === 'all' || (calcFilter === 'custom' && item.isCustom) || item.type === calcFilter) {
+                        selectedItemIds.add(item.id);
+                    }
+                });
+            }
+            renderSelectableTransactions();
+        }
+
+        function renderSelectableTransactions() {
+            const listEl = document.getElementById('calcSelectableList');
+            const allItems = getCombinedSelectableItems();
+
+            // Update filter counts
+            const incCount = allItems.filter(i => i.type === 'income').length;
+            const expCount = allItems.filter(i => i.type === 'expense').length;
+            const custCount = allItems.filter(i => i.isCustom).length;
+            document.getElementById('countAll').textContent = allItems.length;
+            document.getElementById('countInc').textContent = incCount;
+            document.getElementById('countExp').textContent = expCount;
+            document.getElementById('countCust').textContent = custCount;
+
+            // Calculate totals for all checked items
+            let selInc = 0, selExp = 0, selCount = 0;
+            allItems.forEach(item => {
+                if (selectedItemIds.has(item.id)) {
+                    selCount++;
+                    if (item.type === 'income') selInc += item.amount;
+                    else selExp += item.amount;
+                }
+            });
+
+            const net = selInc - selExp;
+            lastSelectedNet = net;
+            const uncoveredExpense = Math.max(0, selExp - selInc);
+
+            document.getElementById('selIncVal').textContent = window.formatMoney(selInc);
+            document.getElementById('selExpVal').textContent = window.formatMoney(selExp);
+            
+            const netEl = document.getElementById('selNetVal');
+            const formattedNet = (net > 0 ? '+' : '') + window.formatMoney(net);
+            netEl.textContent = formattedNet;
+            netEl.style.color = net >= 0 ? 'var(--income-green)' : 'var(--expense-red)';
+
+            const uncoveredEl = document.getElementById('selAbsSumVal');
+            uncoveredEl.textContent = window.formatMoney(uncoveredExpense);
+            uncoveredEl.style.color = uncoveredExpense === 0 ? 'var(--income-green)' : 'var(--expense-red)';
+
+            document.getElementById('selCountBadge').textContent = `${selCount} item${selCount === 1 ? '' : 's'} selected`;
+
+            // Update Mobile Floating Button Badge & Mobile Preview Bar
+            const fabBadge = document.getElementById('fabSelectedBadge');
+            if (fabBadge) fabBadge.textContent = selCount;
+            const mobCountEl = document.getElementById('mobilePreviewCount');
+            if (mobCountEl) mobCountEl.textContent = `${selCount} item${selCount === 1 ? '' : 's'} selected • Tap to open`;
+            const mobNetEl = document.getElementById('mobilePreviewNet');
+            if (mobNetEl) {
+                mobNetEl.textContent = formattedNet;
+                mobNetEl.style.color = net >= 0 ? 'var(--income-green)' : 'var(--expense-red)';
+            }
+
+            const visibleItems = allItems.filter(item => {
+                if (calcFilter === 'all') return true;
+                if (calcFilter === 'custom') return item.isCustom;
+                return item.type === calcFilter;
+            });
+
+            listEl.innerHTML = '';
+            if (visibleItems.length === 0) {
+                listEl.innerHTML = '<div style="text-align:center; padding:28px; color:var(--text-muted); font-size:13px;">No items in this view. Add an optional number above or log transactions on the Dashboard!</div>';
+                return;
+            }
+
+            visibleItems.forEach(item => {
+                const isSelected = selectedItemIds.has(item.id);
+                const isInc = item.type === 'income';
+                const row = document.createElement('div');
+                row.className = 'sel-tx-item' + (isSelected ? ' selected' : '');
+                row.onclick = () => {
+                    if (selectedItemIds.has(item.id)) selectedItemIds.delete(item.id);
+                    else selectedItemIds.add(item.id);
+                    renderSelectableTransactions();
+                };
+
+                row.innerHTML = `
+                    <div class="sel-tx-left">
+                        <input type="checkbox" class="sel-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); this.closest('.sel-tx-item').click();">
+                        <div style="min-width:0;">
+                            <div style="font-weight:600; font-size:14px; color:var(--text-main); display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <span>${item.category}</span>
+                                <span class="status-badge" style="font-size:10px; padding:2px 6px; background:var(--${isInc ? 'status-good-bg' : 'status-bad-bg'}); color:var(--${isInc ? 'status-good-text' : 'status-bad-text'});">${item.type}</span>
+                                ${item.isCustom ? '<span class="status-badge" style="font-size:10px; padding:2px 6px; background:var(--bg-hover); color:var(--text-muted);">optional</span>' : ''}
+                            </div>
+                            <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                ${item.date}${item.notes ? ' • ' + item.notes : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                        <button type="button" class="tx-mini-action" title="Send to Calculator Pad" onclick="event.stopPropagation(); pushAmountToPad(${item.amount}, '${isInc ? '+' : '-'}')">
+                            ${isInc ? '+ Pad' : '− Pad'}
+                        </button>
+                        ${item.isCustom ? `<button type="button" class="tx-mini-action" style="color:var(--expense-red);" onclick="deleteCustomItem('${item.id}', event)"><i class="ph ph-trash"></i></button>` : ''}
+                        <div style="font-weight:700; font-size:15px; color:var(--${isInc ? 'dot-high' : 'dot-low'}); min-width: 76px; text-align: right;">
+                            ${isInc ? '+' : '-'}${window.formatMoney(item.amount)}
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+        }
+
+        // --- 4. QUICK FINANCE TOOLS (TAX/DISCOUNT & LOAN) ---
+        function runTaxDiscountCalc() {
+            const amt = parseFloat(document.getElementById('tdAmount').value) || 0;
+            const disc = parseFloat(document.getElementById('tdDiscount').value) || 0;
+            const tax = parseFloat(document.getElementById('tdTax').value) || 0;
+
+            const saved = amt * (disc / 100);
+            const afterDisc = Math.max(0, amt - saved);
+            const taxAdded = afterDisc * (tax / 100);
+            const finalPrice = afterDisc + taxAdded;
+
+            document.getElementById('tdSavedVal').textContent = window.formatMoney(saved);
+            document.getElementById('tdTaxVal').textContent = window.formatMoney(taxAdded);
+            document.getElementById('tdFinalVal').textContent = window.formatMoney(finalPrice);
+        }
+
+        function runLoanCalc() {
+            const P = parseFloat(document.getElementById('loanPrincipal').value) || 0;
+            const annualRate = parseFloat(document.getElementById('loanRate').value) || 0;
+            const n = parseInt(document.getElementById('loanMonths').value, 10) || 0;
+
+            if (P <= 0 || n <= 0) {
+                document.getElementById('loanMonthlyVal').textContent = window.formatMoney(0);
+                document.getElementById('loanInterestVal').textContent = window.formatMoney(0);
+                document.getElementById('loanTotalVal').textContent = window.formatMoney(0);
+                return;
+            }
+
+            const r = (annualRate / 100) / 12;
+            const emi = r === 0 ? (P / n) : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            const totalPay = emi * n;
+            const totalInterest = Math.max(0, totalPay - P);
+
+            document.getElementById('loanMonthlyVal').textContent = window.formatMoney(emi);
+            document.getElementById('loanInterestVal').textContent = window.formatMoney(totalInterest);
+            document.getElementById('loanTotalVal').textContent = window.formatMoney(totalPay);
+        }
+
+        // Keyboard support for Standard Calculator
+        document.addEventListener('keydown', (e) => {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+                if (e.key === 'Enter' && (document.activeElement.id === 'customItemAmount' || document.activeElement.id === 'customItemLabel')) {
+                    e.preventDefault();
+                    addCustomCalcItem();
+                }
+                return;
+            }
+            if (/^[0-9.+\-*/%()]$/.test(e.key)) {
+                e.preventDefault();
+                calcInput(e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault();
+                calcInput('=');
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                calcInput('BACK');
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                calcInput('C');
+            }
+        });
+
+        // Auto-select all existing transactions on initial load so summary is immediately live
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialItems = getCombinedSelectableItems();
+            initialItems.forEach(item => selectedItemIds.add(item.id));
+            renderSelectableTransactions();
+            runTaxDiscountCalc();
+            runLoanCalc();
+        });
+    </script>
+</body>
+</html>

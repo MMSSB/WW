@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>Logo Studio — Design & Export</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============ Theme Variables (Light Default) ============ */
+:root {
+  --bg: #f4f6fb;
+  --bg-elevated: #ffffff;
+  --panel: #ffffff;
+  --border: #e5e9f2;
+  --border-strong: #d3dae6;
+  --text: #1a1d29;
+  --text-muted: #6b7280;
+  --text-soft: #9aa3b2;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-soft: #eef2ff;
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+  --checker-a: #ffffff;
+  --checker-b: #eef0f4;
+  --scroll-thumb: #d5dbe6;
+  --scroll-thumb-hover: #b8c1d0;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.06);
+  --shadow-md: 0 4px 12px rgba(15,23,42,0.08);
+  --shadow-lg: 0 24px 48px -16px rgba(15,23,42,0.22);
+}
+
+/* ============ Dark Mode (Black & Dark Gray Palette) ============ */
+[data-applied-theme="dark"] {
+  --bg: #09090b;
+  --bg-elevated: #1f1f23;
+  --panel: #121215;
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --text: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --text-soft: #71717a;
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --accent-soft: rgba(99, 102, 241, 0.16);
+  --danger: #f87171;
+  --danger-soft: rgba(239, 68, 68, 0.15);
+  --checker-a: #18181b;
+  --checker-b: #222226;
+  --scroll-thumb: #2e2e34;
+  --scroll-thumb-hover: #43434c;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 6px 18px rgba(0,0,0,0.65);
+  --shadow-lg: 0 24px 54px -12px rgba(0,0,0,0.85);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input { font-family: inherit; }
+
+/* ============ Layout ============ */
+.app {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ============ Header ============ */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 30;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.logo-mark {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: grid; place-items: center;
+  color: white;
+  font-size: 21px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
+}
+.app-header h1 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+.app-header h1 span { color: var(--text-muted); font-weight: 500; }
+.header-spacer { flex: 1; }
+.header-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  white-space: nowrap;
+}
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.45; pointer-events: none; }
+
+.btn-ghost {
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.btn-ghost:hover:not(:disabled) { background: var(--bg-elevated); color: var(--text); }
+.btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-ghost.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ============ Theme Dropdown Submenu ============ */
+.theme-menu-wrap {
+  position: relative;
+}
+.theme-submenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 175px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 6px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.97);
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 100;
+}
+.theme-submenu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.12s;
+  text-align: left;
+}
+.theme-option i {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+}
+.theme-option:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+.theme-option.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.theme-option .check-mark {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0;
+}
+.theme-option.active .check-mark {
+  opacity: 1;
+}
+
+/* ============ Main ============ */
+.app-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 390px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ============ Workspace ============ */
+.workspace {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px;
+  min-height: 0;
+  min-width: 0;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(99,102,241,0.07), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(139,92,246,0.07), transparent 45%),
+    var(--bg);
+  position: relative;
+}
+.canvas-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+.canvas-viewport {
+  position: relative;
+  flex-shrink: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.canvas-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: var(--checker-a);
+  background-image:
+    linear-gradient(45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-b) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-b) 75%);
+  background-size: 18px 18px;
+  background-position: 0 0, 0 9px, 9px -9px, -9px 0px;
+  box-shadow: var(--shadow-lg);
+  transition: border-radius 0.15s;
+  border: 1px solid var(--border);
+}
+.canvas-bg {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  transition: opacity 0.2s;
+  z-index: 1;
+}
+
+/* Grid layer */
+.grid-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.12) 1px, transparent 1px),
+    linear-gradient(rgba(99, 102, 241, 0.24) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.24) 1px, transparent 1px);
+  background-size:
+    20px 20px,
+    20px 20px,
+    100px 100px,
+    100px 100px;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+}
+.grid-layer.active { opacity: 1; }
+
+/* Center guides */
+.center-guides {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.center-guides.active { opacity: 1; }
+.center-guides::before,
+.center-guides::after {
+  content: '';
+  position: absolute;
+  background-image: linear-gradient(to right, rgba(99,102,241,0.5) 50%, transparent 50%);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+}
+.center-guides::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-0.5px);
+}
+.center-guides::after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-image: linear-gradient(to bottom, rgba(99,102,241,0.5) 50%, transparent 50%);
+  background-size: 1px 8px;
+  background-repeat: repeat-y;
+  transform: translateX(-0.5px);
+}
+
+.canvas-stage {
+  position: absolute;
+  top: 0; left: 0;
+  width: 600px; height: 600px;
+  transform-origin: 0 0;
+  will-change: transform;
+  z-index: 4;
+}
+.empty-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 24px;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  font-weight: 500;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+  z-index: 2;
+}
+.canvas-frame.is-empty .empty-hint { opacity: 1; }
+.empty-hint i { display: block; font-size: 28px; margin-bottom: 10px; opacity: 0.6; }
+
+/* Toast notification */
+.toast-msg {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.toast-msg.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast-msg i { color: var(--accent); }
+
+/* ============ Icons ============ */
+.icon-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  line-height: 1;
+  will-change: left, top;
+  touch-action: none;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.02));
+}
+.icon-item i {
+  display: block;
+  line-height: 1;
+  pointer-events: none;
+  font-style: normal;
+}
+.icon-item:active { cursor: grabbing; }
+
+/* ============ Selection overlay ============ */
+.selection-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+.selection-box {
+  position: absolute;
+  border: 1.5px solid var(--accent);
+  border-radius: 5px;
+  pointer-events: none;
+  transition: none;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.35) inset;
+}
+.handle {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  background: #ffffff;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.28);
+  transition: transform 0.12s;
+}
+.handle:hover { transform: scale(1.22); }
+.handle.nw { left: -7px;  top: -7px;    cursor: nwse-resize; }
+.handle.ne { right: -7px; top: -7px;    cursor: nesw-resize; }
+.handle.sw { left: -7px;  bottom: -7px; cursor: nesw-resize; }
+.handle.se { right: -7px; bottom: -7px; cursor: nwse-resize; }
+
+/* ============ Snap guides (live during drag) ============ */
+.snap-guides {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7;
+  overflow: hidden;
+}
+.snap-guide {
+  position: absolute;
+  background: #ff3d8b;
+  box-shadow: 0 0 4px rgba(255, 61, 139, 0.55);
+}
+.snap-guide.v { width: 1px; top: 0; bottom: 0; }
+.snap-guide.h { height: 1px; left: 0; right: 0; }
+.snap-guide.center {
+  background: #6366f1;
+  box-shadow: 0 0 5px rgba(99, 102, 241, 0.7);
+}
+
+/* ============ Sidebar ============ */
+.sidebar {
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overscroll-behavior: contain;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.sidebar::-webkit-scrollbar { width: 8px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 4px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+
+.panel-section {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-section:last-child { border-bottom: none; }
+.panel-section h3 {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-section h3 i { color: var(--accent); font-size: 13px; }
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-header-row h3 { margin-bottom: 0; }
+
+.btn-custom-icon {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+}
+.btn-custom-icon:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Icon library tabs */
+.lib-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: 11px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+.lib-tab {
+  flex: 1;
+  padding: 7px 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  text-align: center;
+  white-space: nowrap;
+}
+.lib-tab:hover { color: var(--text); }
+.lib-tab.active {
+  background: var(--bg-elevated);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-box { position: relative; margin-bottom: 12px; }
+.search-box input {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s;
+  background: var(--bg);
+  color: var(--text);
+}
+.search-box input:focus {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.search-box i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-soft);
+  font-size: 12.5px;
+  pointer-events: none;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  max-height: 230px;
+  overflow-y: auto;
+  padding: 2px;
+  scrollbar-width: thin;
+}
+.icon-grid::-webkit-scrollbar { width: 6px; }
+.icon-grid::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 3px; }
+.icon-btn {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 18px;
+  transition: all 0.12s;
+  border: 1.5px solid var(--border);
+}
+.icon-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: translateY(-1.5px);
+  border-color: var(--accent);
+}
+.icon-btn:active { transform: translateY(0); }
+
+/* Controls */
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+.control-row:last-child { margin-bottom: 0; }
+.control-row > label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  min-width: 58px;
+  flex-shrink: 0;
+}
+.control-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+  height: 4px;
+  cursor: pointer;
+  min-width: 0;
+}
+.control-row .value {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 38px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.control-row input[type="color"] {
+  width: 42px;
+  height: 32px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  padding: 3px;
+  flex-shrink: 0;
+}
+.control-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.control-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+.control-row input[type="color"]::-moz-color-swatch { border: none; border-radius: 6px; }
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+  padding: 7px 10px;
+  border-radius: 9px;
+  transition: background 0.12s;
+}
+.checkbox-row:hover { background: var(--bg); }
+.checkbox-row input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+.checkbox-row .hint {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--text-soft);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.view-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.swatch {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid var(--panel);
+  box-shadow: 0 0 0 1px var(--border-strong);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+  padding: 0;
+}
+.swatch:hover { transform: scale(1.18); box-shadow: 0 0 0 2px var(--accent); }
+
+.btn-full {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 12.5px;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1.5px solid var(--border);
+}
+.btn-full:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.btn-full.btn-danger:hover { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+
+.empty-state {
+  text-align: center;
+  padding: 16px 10px;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  grid-column: 1 / -1;
+}
+.empty-state i { font-size: 20px; display: block; margin-bottom: 6px; opacity: 0.5; }
+
+.kbd-tag {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text);
+}
+
+/* ============ Modals ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 26px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.94) translateY(14px);
+  transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+.modal-overlay.active .modal { transform: scale(1) translateY(0); }
+.modal h2 {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  letter-spacing: -0.015em;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.modal h2 i { color: var(--accent); }
+.modal p.subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.export-preview {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background-color: var(--checker-a);
+  background-image:
+    linear-gradient(45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-b) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-b) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-b) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  min-height: 160px;
+}
+.export-preview canvas {
+  max-width: 140px;
+  max-height: 140px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+.format-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-bottom: 18px;
+}
+.format-btn {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 13px;
+  padding: 13px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text);
+  transition: all 0.15s;
+}
+.format-btn i { font-size: 19px; color: var(--text-soft); transition: color 0.15s; }
+.format-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+.format-btn.selected {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.format-btn.selected i { color: var(--accent); }
+
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.btn-secondary {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+.btn-secondary:hover { background: var(--bg); color: var(--text); }
+
+/* ============ Custom Icon Modal Specifics ============ */
+.custom-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+.custom-preview-box {
+  width: 68px;
+  height: 68px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  color: var(--text);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+.custom-preview-meta {
+  flex: 1;
+  min-width: 0;
+}
+.custom-preview-meta .code-badge {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+.custom-status {
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.custom-status.valid { color: #10b981; }
+.custom-status.invalid { color: var(--danger); }
+
+.code-input-group {
+  margin-bottom: 14px;
+}
+.code-input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.code-input-group input {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-family: monospace;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: all 0.15s;
+}
+.code-input-group input:focus {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.code-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.example-chip {
+  font-size: 11px;
+  font-family: monospace;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: all 0.12s;
+}
+.example-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.modal-icon-browser {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  max-height: 175px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.modal-icon-browser::-webkit-scrollbar { width: 6px; }
+.modal-icon-browser::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 3px; }
+
+/* ============ Responsive ============ */
+@media (max-width: 960px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
+  .workspace { padding: 14px; }
+  .sidebar {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    border-radius: 1.5rem 1.5rem 0 0;
+  }
+  .app-header h1 span { display: none; }
+  .icon-grid { max-height: 180px; }
+}
+
+@media (max-width: 640px) {
+  .app-header { padding: 10px 12px; gap: 5px; }
+  .app-header h1 { font-size: 14px; }
+  .logo-mark { width: 34px; height: 34px; font-size: 18px; }
+  .btn-primary { padding: 8px 13px; font-size: 12.5px; }
+  .btn-ghost { padding: 8px 9px; font-size: 12.5px; }
+  .btn-ghost span { display: none; }
+  .icon-grid { grid-template-columns: repeat(5, 1fr); }
+  .modal-icon-browser { grid-template-columns: repeat(5, 1fr); }
+  .panel-section { padding: 15px 16px; }
+  .modal { padding: 20px; border-radius: 18px; }
+  .format-grid { grid-template-columns: repeat(2, 1fr); }
+  .control-row > label { min-width: 50px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="app-header">
+    <div class="logo-mark"><i class="ph ph-qr-code"></i></div>
+    <h1>Logo Studio <span>· Design &amp; Export</span></h1>
+    <div class="header-spacer"></div>
+
+    <!-- Undo & Redo -->
+    <button class="btn-ghost" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
+      <i class="fas fa-rotate-left"></i>
+    </button>
+    <button class="btn-ghost" id="redoBtn" title="Redo (Ctrl+Y)" disabled>
+      <i class="fas fa-rotate-right"></i>
+    </button>
+
+    <div class="header-divider"></div>
+
+    <button class="btn-ghost active" id="quickToggleAssist" title="Toggle assist (G)">
+      <i class="fas fa-th"></i> <span>Assist</span>
+    </button>
+
+    <!-- Theme Switcher Submenu -->
+    <div class="theme-menu-wrap" id="themeMenuWrap">
+      <button class="btn-ghost" id="themeMenuBtn" title="Switch Theme (Light / Dark / System)">
+        <i class="fas fa-circle-half-stroke" id="themeBtnIcon"></i>
+        <span id="themeBtnLabel">System</span>
+        <i class="fas fa-chevron-down" style="font-size:10px;opacity:0.65;"></i>
+      </button>
+      <div class="theme-submenu" id="themeSubmenu">
+        <button class="theme-option" data-theme-val="light">
+          <i class="fas fa-sun"></i> Light Mode
+          <i class="fas fa-check check-mark"></i>
+        </button>
+        <button class="theme-option" data-theme-val="dark">
+          <i class="fas fa-moon"></i> Dark Mode
+          <i class="fas fa-check check-mark"></i>
+        </button>
+        <button class="theme-option active" data-theme-val="system">
+          <i class="fas fa-desktop"></i> System Default
+          <i class="fas fa-check check-mark"></i>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-ghost" id="resetBtn" title="Reset Canvas">
+      <i class="fas fa-trash-can"></i> <span>Reset</span>
+    </button>
+    <button class="btn-primary" id="exportBtn"><i class="fas fa-download"></i> Export</button>
+  </header>
+
+  <main class="app-main">
+    <section class="workspace">
+      <div class="canvas-wrapper" id="canvasWrapper">
+        <div class="canvas-viewport" id="canvasViewport">
+          <div class="canvas-frame" id="canvasFrame">
+            <div class="canvas-bg" id="canvasBg"></div>
+            <div class="grid-layer" id="gridLayer"></div>
+            <div class="center-guides" id="centerGuides"></div>
+            <div class="canvas-stage" id="canvasStage">
+              <div class="icons-layer" id="iconsLayer"></div>
+            </div>
+            <div class="snap-guides" id="snapGuides"></div>
+            <div class="empty-hint">
+              <div>
+                <i class="fas fa-wand-magic-sparkles"></i>
+                Click an icon or add a custom icon code to start designing
+              </div>
+            </div>
+          </div>
+          <div class="selection-overlay" id="selectionOverlay"></div>
+        </div>
+      </div>
+      <div class="toast-msg" id="toastMsg"><i class="fas fa-check-circle"></i> <span id="toastText">Copied</span></div>
+    </section>
+
+    <aside class="sidebar">
+      <!-- View & Assist -->
+      <div class="panel-section">
+        <h3><i class="fas fa-eye"></i> View &amp; Assist</h3>
+        <div class="view-toggle-group">
+          <label class="checkbox-row">
+            <input type="checkbox" id="toggleGrid" checked>
+            <span><i class="fas fa-th" style="width:14px;color:var(--accent);margin-right:4px;"></i> Show grid</span>
+            <span class="hint">G</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="toggleCenter" checked>
+            <span><i class="fas fa-crosshairs" style="width:14px;color:var(--accent);margin-right:4px;"></i> Center guides</span>
+            <span class="hint">C</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="toggleSnap" checked>
+            <span><i class="fas fa-magnet" style="width:14px;color:var(--accent);margin-right:4px;"></i> Smart snap</span>
+            <span class="hint">S</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="toggleSnapGrid" checked>
+            <span><i class="fas fa-border-all" style="width:14px;color:var(--accent);margin-right:4px;"></i> Snap to grid</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Selected icon properties -->
+      <div class="panel-section" id="selectedPanel" style="display:none;">
+        <h3><i class="fas fa-sliders-h"></i> Selected Icon</h3>
+        <div id="selectedControls"></div>
+      </div>
+
+      <!-- Icon library -->
+      <div class="panel-section">
+        <div class="section-header-row">
+          <h3><i class="fas fa-shapes"></i> Add Icon</h3>
+          <button class="btn-custom-icon" id="openCustomIconModalBtn" title="Enter or search any FA, Remix, or Phosphor icon code">
+            <i class="fas fa-plus"></i> Custom Icon
+          </button>
+        </div>
+        <div class="lib-tabs" id="sidebarLibTabs">
+          <button class="lib-tab active" data-lib="fa">Font&nbsp;Awesome</button>
+          <button class="lib-tab" data-lib="ri">Remix</button>
+          <button class="lib-tab" data-lib="ph">Phosphor</button>
+        </div>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="iconSearch" placeholder="Search icons…" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="icon-grid" id="iconGrid"></div>
+      </div>
+
+      <!-- Canvas settings -->
+      <div class="panel-section">
+        <h3><i class="fas fa-palette"></i> Canvas</h3>
+        <div class="control-row">
+          <label>Background</label>
+          <input type="color" id="bgColor" value="#ffffff">
+          <label class="checkbox-row" style="flex:1;justify-content:flex-end;padding:0;">
+            <input type="checkbox" id="bgTransparent"> Transparent
+          </label>
+        </div>
+        <div class="control-row">
+          <label>Radius</label>
+          <input type="range" id="radiusRange" min="0" max="50" value="10" step="1">
+          <span class="value" id="radiusValue">10%</span>
+        </div>
+        <div class="color-swatches" id="bgSwatches"></div>
+      </div>
+
+      <!-- Shortcuts -->
+      <div class="panel-section">
+        <h3><i class="fas fa-keyboard"></i> Shortcuts</h3>
+        <div style="font-size:12px;color:var(--text-muted);line-height:2.05;">
+          <div><kbd class="kbd-tag">⌘/Ctrl + Z</kbd> Undo</div>
+          <div><kbd class="kbd-tag">⌘/Ctrl + Y</kbd> Redo</div>
+          <div><kbd class="kbd-tag">⌘/Ctrl + C</kbd> Copy icon</div>
+          <div><kbd class="kbd-tag">⌘/Ctrl + V</kbd> Paste icon</div>
+          <div><kbd class="kbd-tag">⌘/Ctrl + D</kbd> Duplicate</div>
+          <div><kbd class="kbd-tag">G</kbd> / <kbd class="kbd-tag">C</kbd> / <kbd class="kbd-tag">S</kbd> Grid / Guides / Snap</div>
+          <div><kbd class="kbd-tag">Arrows</kbd> Move (<kbd class="kbd-tag">⇧</kbd> ×10)</div>
+          <div><kbd class="kbd-tag">Del</kbd> Delete · <kbd class="kbd-tag">Esc</kbd> Deselect</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- Custom Icon Modal (Enter Code, Search & Preview for FA, Remix, Phosphor) -->
+<div class="modal-overlay" id="customIconModal">
+  <div class="modal">
+    <h2><i class="fas fa-icons"></i> Add Custom Icon</h2>
+    <p class="subtitle">Select an icon pack, type any class name or code (e.g. <code>ph ph-qr-code</code>, <code>fa-solid fa-dragon</code>, <code>ri-magic-line</code>), and preview live.</p>
+
+    <div class="lib-tabs" id="modalLibTabs">
+      <button class="lib-tab active" data-modal-lib="fa">Font Awesome</button>
+      <button class="lib-tab" data-modal-lib="ri">Remix Icon</button>
+      <button class="lib-tab" data-modal-lib="ph">Phosphor</button>
+    </div>
+
+    <div class="code-input-group">
+      <label for="customIconInput">Icon Code / Class Name or Search Query</label>
+      <input type="text" id="customIconInput" placeholder="e.g. ph ph-qr-code, fa-dragon, ri-magic-line..." autocomplete="off" spellcheck="false">
+      <div class="code-examples" id="customCodeExamples"></div>
+    </div>
+
+    <!-- Live Preview Card -->
+    <div class="custom-preview-card">
+      <div class="custom-preview-box" id="customPreviewBox">
+        <i id="customPreviewIcon" class="fa-solid fa-wand-magic-sparkles"></i>
+      </div>
+      <div class="custom-preview-meta">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">Resolved Class Code:</div>
+        <div class="code-badge" id="customResolvedCode">fa-solid fa-wand-magic-sparkles</div>
+        <div class="custom-status valid" id="customStatusText">
+          <i class="fas fa-circle-check"></i> Valid icon glyph detected
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Searchable Catalog Inside Modal -->
+    <div style="font-size:11.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px;display:flex;justify-content:space-between;">
+      <span>Matching Icons in Pack (click to preview):</span>
+      <span id="modalMatchCount">0 icons</span>
+    </div>
+    <div class="modal-icon-browser" id="modalIconBrowser"></div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelCustomIcon">Cancel</button>
+      <button class="btn-primary" id="confirmCustomIcon"><i class="fas fa-plus"></i> Add to Canvas &amp; Library</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h2><i class="fas fa-download"></i> Export Logo</h2>
+    <p class="subtitle">Pick a format and size to download your design.</p>
+
+    <div class="export-preview">
+      <canvas id="exportPreviewCanvas" width="280" height="280"></canvas>
+    </div>
+
+    <div class="format-grid" id="formatGrid">
+      <button class="format-btn selected" data-format="png"><i class="fas fa-image"></i> PNG</button>
+      <button class="format-btn" data-format="svg"><i class="fas fa-bezier-curve"></i> SVG</button>
+      <button class="format-btn" data-format="webp"><i class="fas fa-file-image"></i> WEBP</button>
+      <button class="format-btn" data-format="jpg"><i class="fas fa-camera-retro"></i> JPG</button>
+      <button class="format-btn" data-format="ico"><i class="fas fa-window-maximize"></i> ICO</button>
+      <button class="format-btn" data-format="html"><i class="fab fa-html5"></i> HTML</button>
+    </div>
+
+    <div class="control-row" style="margin-bottom:6px;">
+      <label>Size</label>
+      <input type="range" id="exportSizeRange" min="128" max="2048" value="1024" step="128">
+      <span class="value" id="exportSizeValue">1024</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelExport">Cancel</button>
+      <button class="btn-primary" id="confirmExport"><i class="fas fa-download"></i> Download</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Logo Studio — Main Script (Themes, Custom Icon Modal, Undo/Redo, Copy/Paste)
+   ============================================================ */
+(function () {
+  'use strict';
+
+  const VIRTUAL = 600;
+  const GRID_SIZE = 20;
+  const SNAP_THRESHOLD = 7;
+  const MAX_HISTORY = 60;
+
+  /* ---------------- Icon library data ---------------- */
+  const ICONS = {
+    fa: [
+      'fa-qrcode','fa-star','fa-heart','fa-camera','fa-cloud','fa-bolt',
+      'fa-user','fa-house','fa-magnifying-glass','fa-bell','fa-bookmark','fa-comment',
+      'fa-download','fa-envelope','fa-flag','fa-folder','fa-gift','fa-globe',
+      'fa-image','fa-link','fa-lock','fa-location-dot','fa-music','fa-phone',
+      'fa-plane','fa-play','fa-plus','fa-rocket','fa-shield-halved','fa-cart-shopping',
+      'fa-tag','fa-trash','fa-trophy','fa-upload','fa-video','fa-wrench',
+      'fa-chart-line','fa-code','fa-mug-hot','fa-crown','fa-fire','fa-gem',
+      'fa-ghost','fa-paw','fa-leaf','fa-sun','fa-moon','fa-infinity',
+      'fa-dragon','fa-wand-magic-sparkles','fa-atom','fa-brain','fa-compass','fa-cube',
+      'fa-feather','fa-fingerprint','fa-gamepad','fa-graduation-cap','fa-headphones','fa-key',
+      'fa-layer-group','fa-lightbulb','fa-microchip','fa-Mountain-sun','fa-palette','fa-paper-plane',
+      'fa-pen-nib','fa-puzzle-piece','fa-robot','fa-satellite','fa-snowflake','fa-terminal'
+    ],
+    ri: [
+      'ri-qr-code-line','ri-star-line','ri-heart-line','ri-camera-line','ri-cloud-line','ri-flashlight-line',
+      'ri-user-line','ri-home-line','ri-search-line','ri-notification-3-line','ri-bookmark-line','ri-chat-1-line',
+      'ri-download-line','ri-mail-line','ri-flag-line','ri-folder-line','ri-gift-line','ri-global-line',
+      'ri-image-line','ri-link','ri-lock-line','ri-map-pin-line','ri-music-line','ri-phone-line',
+      'ri-plane-line','ri-play-line','ri-add-line','ri-rocket-line','ri-shield-line','ri-shopping-cart-line',
+      'ri-price-tag-3-line','ri-delete-bin-line','ri-trophy-line','ri-upload-line','ri-video-line','ri-tools-line',
+      'ri-line-chart-line','ri-code-line','ri-cup-line','ri-vip-crown-line','ri-fire-line','ri-sparkling-line',
+      'ri-paw-print-line','ri-leaf-line','ri-sun-line','ri-moon-line','ri-lightning-line','ri-planet-line',
+      'ri-magic-line','ri-compass-3-line','ri-cpu-line','ri-fingerprint-line','ri-gamepad-line','ri- ghost-line',
+      'ri-headphone-line','ri-key-2-line','ri-lightbulb-line','ri-palette-line','ri-quill-pen-line','ri-robot-2-line',
+      'ri-send-plane-fill','ri-Stack-line','ri-sword-line','ri-terminal-box-line','ri-treasure-map-line','ri-umbrella-line'
+    ],
+    ph: [
+      'ph-qr-code','ph-star','ph-heart','ph-camera','ph-cloud','ph-lightning',
+      'ph-user','ph-house','ph-magnifying-glass','ph-bell','ph-bookmark-simple','ph-chat-circle',
+      'ph-download-simple','ph-envelope-simple','ph-flag','ph-folder','ph-gift','ph-globe',
+      'ph-image','ph-link','ph-lock','ph-map-pin','ph-music-note','ph-phone',
+      'ph-airplane','ph-play','ph-plus','ph-rocket','ph-shield','ph-shopping-cart',
+      'ph-tag','ph-trash','ph-trophy','ph-upload','ph-video-camera','ph-wrench',
+      'ph-chart-line','ph-code','ph-coffee','ph-crown','ph-fire','ph-sparkle',
+      'ph-paw-print','ph-leaf','ph-sun','ph-moon','ph-planet','ph-shooting-star',
+      'ph-atom','ph-brain','ph-butterfly','ph-compass','ph-cpu','ph-cube',
+      'ph-diamond','ph-fingerprint','ph-Flying-saucer','ph-game-controller','ph-ghost','ph-graduation-cap',
+      'ph-headphones','ph-infinity','ph-key','ph-lightbulb','ph-magic-wand','ph-mountains',
+      'ph-paint-brush','ph-paper-plane-tilt','ph-pen-nib','ph-puzzle-piece','ph-robot','ph-terminal-window'
+    ]
+  };
+
+  const EXAMPLE_CHIPS = {
+    fa: ['fa-solid fa-dragon', 'fa-solid fa-qrcode', 'fa-brands fa-github', 'fa-regular fa-gem', 'fa-microchip'],
+    ri: ['ri-qr-code-line', 'ri-magic-line', 'ri-robot-2-line', 'ri-sparkling-fill', 'ri-compass-3-line'],
+    ph: ['ph ph-qr-code', 'ph ph-magic-wand', 'ph ph-atom', 'ph ph-robot', 'ph ph-butterfly']
+  };
+
+  /* ---------------- State ---------------- */
+  const state = {
+    icons: [],
+    selectedId: null,
+    bg: '#ffffff',
+    transparent: false,
+    radius: 10,
+    activeLib: 'fa',
+    search: '',
+    showGrid: true,
+    showCenter: true,
+    snapEnabled: true,
+    snapToGrid: true,
+    themeMode: localStorage.getItem('logo_studio_theme') || 'system'
+  };
+
+  let iconCounter = 0;
+  let drag = null;
+  let clipboardIcon = null;
+
+  /* ---------------- History (Undo / Redo) ---------------- */
+  const historyStack = [];
+  const redoStack = [];
+
+  function snapshotState() {
+    return JSON.stringify({
+      icons: state.icons,
+      selectedId: state.selectedId,
+      bg: state.bg,
+      transparent: state.transparent,
+      radius: state.radius
+    });
+  }
+
+  function pushHistory() {
+    const snap = snapshotState();
+    if (historyStack.length > 0 && historyStack[historyStack.length - 1] === snap) return;
+    historyStack.push(snap);
+    if (historyStack.length > MAX_HISTORY) historyStack.shift();
+    redoStack.length = 0;
+    updateHistoryButtons();
+  }
+
+  function applySnapshot(snapStr) {
+    try {
+      const data = JSON.parse(snapStr);
+      state.icons = data.icons || [];
+      state.selectedId = data.selectedId || null;
+      state.bg = data.bg || '#ffffff';
+      state.transparent = !!data.transparent;
+      state.radius = data.radius ?? 10;
+
+      bgColorInput.value = state.bg;
+      bgTransparent.checked = state.transparent;
+      radiusRange.value = state.radius;
+      radiusValue.textContent = state.radius + '%';
+      panelIconId = null;
+
+      renderCanvasStyles();
+      render();
+      updateHistoryButtons();
+    } catch (e) {
+      console.error('History restore error:', e);
+    }
+  }
+
+  function undo() {
+    if (historyStack.length <= 1) return;
+    const current = historyStack.pop();
+    redoStack.push(current);
+    const prev = historyStack[historyStack.length - 1];
+    applySnapshot(prev);
+    showToast('Undo');
+  }
+
+  function redo() {
+    if (redoStack.length === 0) return;
+    const next = redoStack.pop();
+    historyStack.push(next);
+    applySnapshot(next);
+    showToast('Redo');
+  }
+
+  function updateHistoryButtons() {
+    $('undoBtn').disabled = historyStack.length <= 1;
+    $('redoBtn').disabled = redoStack.length === 0;
+  }
+
+  /* ---------------- DOM refs ---------------- */
+  const $ = (id) => document.getElementById(id);
+  const canvasWrapper     = $('canvasWrapper');
+  const canvasViewport    = $('canvasViewport');
+  const canvasFrame       = $('canvasFrame');
+  const canvasBg          = $('canvasBg');
+  const gridLayer         = $('gridLayer');
+  const centerGuides      = $('centerGuides');
+  const canvasStage       = $('canvasStage');
+  const iconsLayer        = $('iconsLayer');
+  const selectionOverlay  = $('selectionOverlay');
+  const snapGuidesLayer   = $('snapGuides');
+  const selectedPanel     = $('selectedPanel');
+  const selectedControls  = $('selectedControls');
+  const iconGrid          = $('iconGrid');
+  const iconSearch        = $('iconSearch');
+  const bgColorInput      = $('bgColor');
+  const bgTransparent     = $('bgTransparent');
+  const radiusRange       = $('radiusRange');
+  const radiusValue       = $('radiusValue');
+  const bgSwatches        = $('bgSwatches');
+  const toggleGrid        = $('toggleGrid');
+  const toggleCenter      = $('toggleCenter');
+  const toggleSnap        = $('toggleSnap');
+  const toggleSnapGrid    = $('toggleSnapGrid');
+  const quickToggleAssist = $('quickToggleAssist');
+  const toastMsg          = $('toastMsg');
+  const toastText         = $('toastText');
+
+  /* ---------------- Toast Notification ---------------- */
+  let toastTimer = null;
+  function showToast(msg) {
+    toastText.textContent = msg;
+    toastMsg.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastMsg.classList.remove('show'), 1400);
+  }
+
+  /* ---------------- Theme Management (Light / Dark / System) ---------------- */
+  const themeMenuWrap = $('themeMenuWrap');
+  const themeMenuBtn  = $('themeMenuBtn');
+  const themeSubmenu  = $('themeSubmenu');
+  const themeBtnIcon  = $('themeBtnIcon');
+  const themeBtnLabel = $('themeBtnLabel');
+  const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function applyTheme(mode) {
+    state.themeMode = mode;
+    localStorage.setItem('logo_studio_theme', mode);
+
+    let effective = mode;
+    if (mode === 'system') {
+      effective = darkMediaQuery.matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-applied-theme', effective);
+
+    // Update button icon & label
+    if (mode === 'light') {
+      themeBtnIcon.className = 'fas fa-sun';
+      themeBtnLabel.textContent = 'Light';
+    } else if (mode === 'dark') {
+      themeBtnIcon.className = 'fas fa-moon';
+      themeBtnLabel.textContent = 'Dark';
+    } else {
+      themeBtnIcon.className = 'fas fa-desktop';
+      themeBtnLabel.textContent = 'System';
+    }
+
+    themeSubmenu.querySelectorAll('.theme-option').forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.themeVal === mode);
+    });
+  }
+
+  themeMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themeSubmenu.classList.toggle('open');
+  });
+
+  themeSubmenu.addEventListener('click', (e) => {
+    const opt = e.target.closest('.theme-option');
+    if (!opt) return;
+    applyTheme(opt.dataset.themeVal);
+    themeSubmenu.classList.remove('open');
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!themeMenuWrap.contains(e.target)) {
+      themeSubmenu.classList.remove('open');
+    }
+  });
+
+  darkMediaQuery.addEventListener('change', () => {
+    if (state.themeMode === 'system') applyTheme('system');
+  });
+
+  /* ---------------- Utilities ---------------- */
+  const uid = () => 'i' + (++iconCounter) + '_' + Date.now().toString(36);
+  const getScale = () => canvasViewport.clientWidth / VIRTUAL;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function escapeXml(s) {
+    return String(s).replace(/[<>&"']/g, c => ({
+      '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'
+    })[c]);
+  }
+
+  function resolveUnicode(className) {
+    const el = document.createElement('i');
+    el.className = className;
+    el.style.cssText = 'position:fixed;left:-9999px;top:-9999px;font-size:20px;visibility:hidden;pointer-events:none;';
+    document.body.appendChild(el);
+    let content = '';
+    try { content = getComputedStyle(el, '::before').content; } catch (e) {}
+    document.body.removeChild(el);
+    if (!content || content === 'none' || content === 'normal' || content === '""' || content === "''") {
+      return null;
+    }
+    const m = content.match(/\\([0-9a-fA-F]{1,6})/);
+    if (m) return String.fromCodePoint(parseInt(m[1], 16));
+    const m2 = content.match(/^"(.*)"$/);
+    if (m2 && m2[1]) return m2[1];
+    return null;
+  }
+
+  function buildClass(lib, rawInput) {
+    const clean = rawInput.trim().replace(/^<i\s+class=["']|["']><\/i>$/gi, '').trim();
+    if (!clean) return '';
+
+    if (lib === 'fa') {
+      if (clean.includes('fa-solid') || clean.includes('fa-regular') || clean.includes('fa-brands') || clean.startsWith('fas ') || clean.startsWith('far ') || clean.startsWith('fab ')) {
+        return clean;
+      }
+      const token = clean.startsWith('fa-') ? clean : 'fa-' + clean;
+      return 'fa-solid ' + token;
+    }
+    if (lib === 'ri') {
+      if (clean.startsWith('ri-')) return clean;
+      return 'ri-' + clean + (clean.endsWith('-line') || clean.endsWith('-fill') ? '' : '-line');
+    }
+    if (lib === 'ph') {
+      if (clean.startsWith('ph ') || clean.startsWith('ph-fill ') || clean.startsWith('ph-bold ')) {
+        return clean;
+      }
+      const token = clean.startsWith('ph-') ? clean : 'ph-' + clean;
+      return 'ph ' + token;
+    }
+    return clean;
+  }
+
+  function extractShortName(lib, rawInput) {
+    const clean = rawInput.trim().replace(/^<i\s+class=["']|["']><\/i>$/gi, '').trim();
+    const parts = clean.split(/\s+/);
+    const last = parts[parts.length - 1] || clean;
+    if (lib === 'fa' && !last.startsWith('fa-')) return 'fa-' + last;
+    if (lib === 'ri' && !last.startsWith('ri-')) return 'ri-' + last;
+    if (lib === 'ph' && !last.startsWith('ph-')) return 'ph-' + last;
+    return last;
+  }
+
+  function getFontSpec(icon) {
+    if (icon.lib === 'fa') {
+      if (icon.className.includes('fa-brands') || icon.className.startsWith('fab '))  return { family: 'Font Awesome 6 Brands', weight: 400 };
+      if (icon.className.includes('fa-regular') || icon.className.startsWith('far ')) return { family: 'Font Awesome 6 Free',   weight: 400 };
+      return { family: 'Font Awesome 6 Free', weight: 900 };
+    }
+    if (icon.lib === 'ri') return { family: 'remixicon', weight: 400 };
+    if (icon.lib === 'ph') return { family: 'Phosphor',  weight: 400 };
+    return { family: 'sans-serif', weight: 400 };
+  }
+
+  const unicodeCache = new Map();
+  function getUnicode(icon) {
+    if (unicodeCache.has(icon.className)) return unicodeCache.get(icon.className);
+    const u = resolveUnicode(icon.className);
+    if (u) unicodeCache.set(icon.className, u);
+    return u;
+  }
+
+  function resolveAllUnicode() {
+    return new Promise((resolve) => {
+      let pending = 0, done = false;
+      state.icons.forEach(icon => {
+        if (unicodeCache.has(icon.className)) return;
+        const u = resolveUnicode(icon.className);
+        if (u) unicodeCache.set(icon.className, u);
+        else pending++;
+      });
+      if (pending === 0) { resolve(); return; }
+      setTimeout(() => resolveAllUnicode().then(resolve), 120);
+    });
+  }
+
+  /* ---------------- Rendering ---------------- */
+  function render() {
+    const frag = document.createDocumentFragment();
+    for (const icon of state.icons) {
+      const el = document.createElement('div');
+      el.className = 'icon-item';
+      el.dataset.id = icon.id;
+      el.style.left = icon.x + 'px';
+      el.style.top = icon.y + 'px';
+      el.style.fontSize = icon.size + 'px';
+      el.style.color = icon.color;
+      const i = document.createElement('i');
+      i.className = icon.className;
+      i.style.fontSize = icon.size + 'px';
+      i.style.transform = `rotate(${icon.rotation}deg)`;
+      el.appendChild(i);
+      frag.appendChild(el);
+    }
+    iconsLayer.innerHTML = '';
+    iconsLayer.appendChild(frag);
+
+    canvasFrame.classList.toggle('is-empty', state.icons.length === 0);
+    updateSelectionOverlay();
+    updatePanelValues();
+  }
+
+  function renderCanvasStyles() {
+    canvasFrame.style.borderRadius = state.radius + '%';
+    canvasBg.style.background = state.bg;
+    canvasBg.style.opacity = state.transparent ? '0' : '1';
+  }
+
+  function renderAssistVisibility() {
+    gridLayer.classList.toggle('active', state.showGrid);
+    centerGuides.classList.toggle('active', state.showCenter);
+    quickToggleAssist.classList.toggle('active',
+      state.showGrid || state.showCenter || state.snapEnabled);
+  }
+
+  function updateGridSize() {
+    const scale = getScale();
+    const minor = GRID_SIZE * scale;
+    const major = minor * 5;
+    gridLayer.style.backgroundSize =
+      `${minor}px ${minor}px, ${minor}px ${minor}px, ${major}px ${major}px, ${major}px ${major}px`;
+  }
+
+  /* ---------------- Selection overlay ---------------- */
+  function updateSelectionOverlay() {
+    selectionOverlay.innerHTML = '';
+    if (!state.selectedId) return;
+    const icon = state.icons.find(i => i.id === state.selectedId);
+    if (!icon) return;
+
+    const scale = getScale();
+    const cx = icon.x * scale;
+    const cy = icon.y * scale;
+    const s  = Math.max(icon.size * scale, 16);
+
+    const box = document.createElement('div');
+    box.className = 'selection-box';
+    box.style.left   = (cx - s / 2) + 'px';
+    box.style.top    = (cy - s / 2) + 'px';
+    box.style.width  = s + 'px';
+    box.style.height = s + 'px';
+    box.style.transform = `rotate(${icon.rotation}deg)`;
+
+    ['nw','ne','sw','se'].forEach(corner => {
+      const h = document.createElement('div');
+      h.className = 'handle ' + corner;
+      h.dataset.corner = corner;
+      box.appendChild(h);
+    });
+    selectionOverlay.appendChild(box);
+  }
+
+  /* ---------------- Snap guides ---------------- */
+  function clearSnapGuides() { snapGuidesLayer.innerHTML = ''; }
+
+  function drawSnapGuides(guides) {
+    snapGuidesLayer.innerHTML = '';
+    const scale = getScale();
+    for (const g of guides) {
+      const el = document.createElement('div');
+      el.className = 'snap-guide ' + (g.axis === 'v' ? 'v' : 'h') + (g.isCenter ? ' center' : '');
+      if (g.axis === 'v') el.style.left = (g.pos * scale) + 'px';
+      else el.style.top = (g.pos * scale) + 'px';
+      snapGuidesLayer.appendChild(el);
+    }
+  }
+
+  function computeSnap(icon, newX, newY) {
+    if (!state.snapEnabled && !state.snapToGrid) {
+      return { x: newX, y: newY, guides: [] };
+    }
+    const guides = [];
+    let x = newX, y = newY;
+    const halfW = icon.size / 2, halfH = icon.size / 2;
+
+    const xTargets = [
+      { val: 0, isCenter: false },
+      { val: VIRTUAL/2, isCenter: true },
+      { val: VIRTUAL, isCenter: false }
+    ];
+    const yTargets = [
+      { val: 0, isCenter: false },
+      { val: VIRTUAL/2, isCenter: true },
+      { val: VIRTUAL, isCenter: false }
+    ];
+    for (const o of state.icons) {
+      if (o.id === icon.id) continue;
+      const oh = o.size / 2;
+      xTargets.push({ val: o.x - oh, isCenter: false }, { val: o.x, isCenter: true }, { val: o.x + oh, isCenter: false });
+      yTargets.push({ val: o.y - oh, isCenter: false }, { val: o.y, isCenter: true }, { val: o.y + oh, isCenter: false });
+    }
+
+    let xSnapped = false;
+    if (state.snapEnabled) {
+      const xChecks = [{ pos: newX - halfW }, { pos: newX }, { pos: newX + halfW }];
+      let best = null;
+      for (const c of xChecks) {
+        for (const t of xTargets) {
+          const d = Math.abs(c.pos - t.val);
+          if (d <= SNAP_THRESHOLD && (!best || d < best.d)) {
+            best = { d, target: t.val, delta: t.val - c.pos, isCenter: t.isCenter };
+          }
+        }
+      }
+      if (best) {
+        x = newX + best.delta;
+        guides.push({ axis: 'v', pos: best.target, isCenter: best.isCenter });
+        xSnapped = true;
+      }
+    }
+    if (!xSnapped && state.snapToGrid) {
+      const snapped = Math.round(newX / GRID_SIZE) * GRID_SIZE;
+      if (Math.abs(snapped - newX) <= SNAP_THRESHOLD * 1.5) x = snapped;
+    }
+
+    let ySnapped = false;
+    if (state.snapEnabled) {
+      const yChecks = [{ pos: newY - halfH }, { pos: newY }, { pos: newY + halfH }];
+      let best = null;
+      for (const c of yChecks) {
+        for (const t of yTargets) {
+          const d = Math.abs(c.pos - t.val);
+          if (d <= SNAP_THRESHOLD && (!best || d < best.d)) {
+            best = { d, target: t.val, delta: t.val - c.pos, isCenter: t.isCenter };
+          }
+        }
+      }
+      if (best) {
+        y = newY + best.delta;
+        guides.push({ axis: 'h', pos: best.target, isCenter: best.isCenter });
+        ySnapped = true;
+      }
+    }
+    if (!ySnapped && state.snapToGrid) {
+      const snapped = Math.round(newY / GRID_SIZE) * GRID_SIZE;
+      if (Math.abs(snapped - newY) <= SNAP_THRESHOLD * 1.5) y = snapped;
+    }
+
+    return { x, y, guides };
+  }
+
+  /* ---------------- Selected panel ---------------- */
+  let panelIconId = null;
+
+  function buildPanel() {
+    const icon = state.icons.find(i => i.id === state.selectedId);
+    if (!icon) { selectedPanel.style.display = 'none'; panelIconId = null; return; }
+    selectedPanel.style.display = 'block';
+    panelIconId = icon.id;
+
+    selectedControls.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:15px;">
+        <div style="width:46px;height:46px;border-radius:11px;background:var(--bg);border:1px solid var(--border);display:grid;place-items:center;font-size:25px;color:${icon.color};flex-shrink:0;">
+          <i class="${icon.className}" style="transform:rotate(${icon.rotation}deg);font-style:normal;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeXml(icon.iconName)}</div>
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:1px;">
+            ${icon.lib === 'fa' ? 'Font Awesome' : icon.lib === 'ri' ? 'Remix Icon' : 'Phosphor'}
+          </div>
+        </div>
+      </div>
+
+      <div class="control-row">
+        <label>Color</label>
+        <input type="color" value="${icon.color}" data-ctrl="color">
+      </div>
+      <div class="color-swatches" id="iconColorSwatches" style="margin-bottom:14px;"></div>
+
+      <div class="control-row">
+        <label>Size</label>
+        <input type="range" min="10" max="400" step="1" value="${icon.size}" data-ctrl="size">
+        <span class="value">${Math.round(icon.size)}</span>
+      </div>
+      <div class="control-row">
+        <label>Rotate</label>
+        <input type="range" min="-180" max="180" step="1" value="${icon.rotation}" data-ctrl="rotation">
+        <span class="value">${Math.round(icon.rotation)}°</span>
+      </div>
+      <div class="control-row">
+        <label>X</label>
+        <input type="range" min="0" max="600" step="1" value="${icon.x}" data-ctrl="x">
+        <span class="value">${Math.round(icon.x)}</span>
+      </div>
+      <div class="control-row">
+        <label>Y</label>
+        <input type="range" min="0" max="600" step="1" value="${icon.y}" data-ctrl="y">
+        <span class="value">${Math.round(icon.y)}</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px;">
+        <button class="btn-full" data-action="centerX" title="Center horizontally" style="font-size:11.5px;padding:9px 6px;"><i class="fas fa-arrows-alt-h"></i></button>
+        <button class="btn-full" data-action="centerY" title="Center vertically" style="font-size:11.5px;padding:9px 6px;"><i class="fas fa-arrows-alt-v"></i></button>
+        <button class="btn-full" data-action="centerBoth" title="Center both" style="font-size:11.5px;padding:9px 6px;"><i class="fas fa-crosshairs"></i></button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+        <button class="btn-full" data-action="duplicate"><i class="fas fa-clone"></i> Duplicate</button>
+        <button class="btn-full btn-danger" data-action="delete"><i class="fas fa-trash"></i> Delete</button>
+      </div>
+    `;
+
+    selectedControls.querySelectorAll('[data-ctrl]').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const ic = state.icons.find(i => i.id === state.selectedId);
+        if (!ic) return;
+        const ctrl = e.target.dataset.ctrl;
+        const val = e.target.value;
+        if (ctrl === 'color')         ic.color = val;
+        else if (ctrl === 'size')     ic.size = parseFloat(val);
+        else if (ctrl === 'rotation') ic.rotation = parseFloat(val);
+        else if (ctrl === 'x')        ic.x = parseFloat(val);
+        else if (ctrl === 'y')        ic.y = parseFloat(val);
+        render();
+      });
+      input.addEventListener('change', () => pushHistory());
+    });
+
+    const swatchBox = selectedControls.querySelector('#iconColorSwatches');
+    const palette = ['#1a1d29','#6366f1','#8b5cf6','#ec4899','#ef4444','#f59e0b','#10b981','#06b6d4','#3b82f6','#ffffff'];
+    palette.forEach(c => {
+      const s = document.createElement('button');
+      s.className = 'swatch';
+      s.style.background = c;
+      s.title = c;
+      s.onclick = () => {
+        const ic = state.icons.find(i => i.id === state.selectedId);
+        if (ic) { ic.color = c; render(); pushHistory(); }
+      };
+      swatchBox.appendChild(s);
+    });
+
+    selectedControls.querySelector('[data-action="duplicate"]').onclick = () => {
+      duplicateSelectedIcon();
+    };
+    selectedControls.querySelector('[data-action="delete"]').onclick = () => {
+      deleteSelectedIcon();
+    };
+    selectedControls.querySelector('[data-action="centerX"]').onclick = () => {
+      const ic = state.icons.find(i => i.id === state.selectedId);
+      if (ic) { ic.x = VIRTUAL / 2; render(); pushHistory(); }
+    };
+    selectedControls.querySelector('[data-action="centerY"]').onclick = () => {
+      const ic = state.icons.find(i => i.id === state.selectedId);
+      if (ic) { ic.y = VIRTUAL / 2; render(); pushHistory(); }
+    };
+    selectedControls.querySelector('[data-action="centerBoth"]').onclick = () => {
+      const ic = state.icons.find(i => i.id === state.selectedId);
+      if (ic) { ic.x = VIRTUAL / 2; ic.y = VIRTUAL / 2; render(); pushHistory(); }
+    };
+  }
+
+  function updatePanelValues() {
+    if (!state.selectedId) {
+      if (panelIconId !== null) { selectedPanel.style.display = 'none'; panelIconId = null; }
+      return;
+    }
+    if (panelIconId !== state.selectedId) { buildPanel(); return; }
+    const icon = state.icons.find(i => i.id === state.selectedId);
+    if (!icon) return;
+
+    selectedControls.querySelectorAll('[data-ctrl]').forEach(el => {
+      const ctrl = el.dataset.ctrl;
+      let val = icon[ctrl];
+      if (el.value !== String(val)) el.value = val;
+
+      const valEl = el.parentElement.querySelector('.value');
+      if (valEl) {
+        if (ctrl === 'rotation') valEl.textContent = Math.round(icon.rotation) + '°';
+        else if (ctrl === 'size') valEl.textContent = Math.round(icon.size);
+        else if (ctrl === 'x' || ctrl === 'y') valEl.textContent = Math.round(icon[ctrl]);
+      }
+    });
+  }
+
+  /* ---------------- Icon library ---------------- */
+  function renderLibrary() {
+    const list = ICONS[state.activeLib] || [];
+    const q = state.search.trim().toLowerCase();
+    const filtered = q ? list.filter(n => n.toLowerCase().includes(q)) : list;
+
+    iconGrid.innerHTML = '';
+    if (filtered.length === 0) {
+      iconGrid.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i>No icons in preset list.<br><button class="btn-custom-icon" style="margin-top:8px;" id="emptyAddCustomBtn"><i class="fas fa-plus"></i> Add "${escapeXml(state.search)}" via Custom Modal</button></div>`;
+      const btn = $('emptyAddCustomBtn');
+      if (btn) btn.onclick = () => openCustomModal(state.activeLib, state.search);
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    for (const name of filtered) {
+      const btn = document.createElement('button');
+      btn.className = 'icon-btn';
+      btn.title = name;
+      btn.innerHTML = `<i class="${buildClass(state.activeLib, name)}"></i>`;
+      btn.onclick = () => addIcon(state.activeLib, name);
+      frag.appendChild(btn);
+    }
+    iconGrid.appendChild(frag);
+  }
+
+  /* ---------------- Add / Copy / Paste / Delete Icon ---------------- */
+  function addIcon(lib, name, customClassName, recordHistory = true) {
+    const className = customClassName || buildClass(lib, name);
+
+    let inheritColor = '#1a1d29';
+    if (state.selectedId) {
+      const sel = state.icons.find(i => i.id === state.selectedId);
+      if (sel) inheritColor = sel.color;
+    }
+
+    const icon = {
+      id: uid(),
+      lib,
+      iconName: name,
+      className,
+      x: VIRTUAL / 2,
+      y: VIRTUAL / 2,
+      size: 150,
+      color: inheritColor,
+      rotation: 0
+    };
+
+    const u = resolveUnicode(className);
+    if (u) unicodeCache.set(className, u);
+
+    state.icons.push(icon);
+    state.selectedId = icon.id;
+    panelIconId = null;
+    render();
+    if (recordHistory) pushHistory();
+
+    if (window.innerWidth <= 960) {
+      setTimeout(() => selectedPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+    }
+  }
+
+  function copySelectedIcon() {
+    const ic = state.icons.find(i => i.id === state.selectedId);
+    if (!ic) return;
+    clipboardIcon = { ...ic };
+    showToast('Icon copied (Ctrl+C)');
+  }
+
+  function pasteClipboardIcon() {
+    if (!clipboardIcon) return;
+    const copy = {
+      ...clipboardIcon,
+      id: uid(),
+      x: clamp(clipboardIcon.x + 35, 0, VIRTUAL),
+      y: clamp(clipboardIcon.y + 35, 0, VIRTUAL)
+    };
+    clipboardIcon = { ...copy };
+    state.icons.push(copy);
+    state.selectedId = copy.id;
+    panelIconId = null;
+    render();
+    pushHistory();
+    showToast('Icon pasted (Ctrl+V)');
+  }
+
+  function duplicateSelectedIcon() {
+    const ic = state.icons.find(i => i.id === state.selectedId);
+    if (!ic) return;
+    const copy = { ...ic, id: uid(), x: clamp(ic.x + 40, 0, VIRTUAL), y: clamp(ic.y + 40, 0, VIRTUAL) };
+    state.icons.push(copy);
+    state.selectedId = copy.id;
+    panelIconId = null;
+    render();
+    pushHistory();
+    showToast('Icon duplicated');
+  }
+
+  function deleteSelectedIcon() {
+    if (!state.selectedId) return;
+    state.icons = state.icons.filter(i => i.id !== state.selectedId);
+    state.selectedId = null;
+    render();
+    pushHistory();
+    showToast('Icon deleted');
+  }
+
+  /* ---------------- Custom Icon Modal Logic ---------------- */
+  const customIconModal    = $('customIconModal');
+  const customIconInput    = $('customIconInput');
+  const customPreviewIcon  = $('customPreviewIcon');
+  const customResolvedCode = $('customResolvedCode');
+  const customStatusText   = $('customStatusText');
+  const customCodeExamples = $('customCodeExamples');
+  const modalIconBrowser   = $('modalIconBrowser');
+  const modalMatchCount    = $('modalMatchCount');
+
+  let modalActiveLib = 'fa';
+
+  function detectLibFromInput(raw) {
+    const val = raw.trim().toLowerCase();
+    if (val.startsWith('ph ') || val.startsWith('ph-')) return 'ph';
+    if (val.startsWith('ri ') || val.startsWith('ri-')) return 'ri';
+    if (val.startsWith('fa-') || val.startsWith('fas ') || val.startsWith('far ') || val.startsWith('fab ')) return 'fa';
+    return null;
+  }
+
+  function setModalLib(lib) {
+    modalActiveLib = lib;
+    document.querySelectorAll('#modalLibTabs .lib-tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.modalLib === lib);
+    });
+    renderModalExamples();
+    updateCustomModalPreview();
+  }
+
+  function renderModalExamples() {
+    const chips = EXAMPLE_CHIPS[modalActiveLib] || [];
+    customCodeExamples.innerHTML = '';
+    chips.forEach(code => {
+      const btn = document.createElement('button');
+      btn.className = 'example-chip';
+      btn.textContent = code;
+      btn.onclick = () => {
+        customIconInput.value = code;
+        updateCustomModalPreview();
+      };
+      customCodeExamples.appendChild(btn);
+    });
+  }
+
+  function updateCustomModalPreview() {
+    const raw = customIconInput.value.trim();
+
+    // Auto-switch tab if user types an explicit prefix like "ph ph-qr-code" or "ri-star-line"
+    const detected = detectLibFromInput(raw);
+    if (detected && detected !== modalActiveLib) {
+      modalActiveLib = detected;
+      document.querySelectorAll('#modalLibTabs .lib-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.modalLib === modalActiveLib);
+      });
+      renderModalExamples();
+    }
+
+    const defaultSample = modalActiveLib === 'fa' ? 'fa-qrcode' : modalActiveLib === 'ri' ? 'ri-qr-code-line' : 'ph-qr-code';
+    const className = buildClass(modalActiveLib, raw || defaultSample);
+    customPreviewIcon.className = className;
+    customResolvedCode.textContent = className;
+
+    // Verify if icon glyph resolves
+    const uni = resolveUnicode(className);
+    if (uni) {
+      customStatusText.className = 'custom-status valid';
+      customStatusText.innerHTML = `<i class="fas fa-circle-check"></i> Valid icon glyph detected`;
+    } else {
+      customStatusText.className = 'custom-status invalid';
+      customStatusText.innerHTML = `<i class="fas fa-circle-exclamation"></i> Glyph not found — check spelling or try another style`;
+    }
+
+    // Filter icons in modal browser
+    const list = ICONS[modalActiveLib] || [];
+    const searchToken = raw.toLowerCase()
+      .replace(/^(fa-solid|fa-regular|fa-brands|fas|far|fab|ph|ri)\s+/g, '')
+      .replace(/^(fa-|ph-|ri-)/, '')
+      .trim();
+
+    const filtered = searchToken
+      ? list.filter(n => n.toLowerCase().includes(searchToken))
+      : list;
+
+    modalMatchCount.textContent = `${filtered.length} icon${filtered.length === 1 ? '' : 's'}`;
+    modalIconBrowser.innerHTML = '';
+
+    const frag = document.createDocumentFragment();
+    filtered.forEach(name => {
+      const b = document.createElement('button');
+      b.className = 'icon-btn';
+      b.title = buildClass(modalActiveLib, name);
+      b.innerHTML = `<i class="${buildClass(modalActiveLib, name)}"></i>`;
+      b.onclick = () => {
+        customIconInput.value = buildClass(modalActiveLib, name);
+        updateCustomModalPreview();
+      };
+      frag.appendChild(b);
+    });
+    modalIconBrowser.appendChild(frag);
+  }
+
+  function openCustomModal(defaultLib, initialQuery = '') {
+    modalActiveLib = defaultLib || state.activeLib;
+    setModalLib(modalActiveLib);
+    customIconInput.value = initialQuery;
+    updateCustomModalPreview();
+    customIconModal.classList.add('active');
+    setTimeout(() => customIconInput.focus(), 80);
+  }
+
+  $('openCustomIconModalBtn').addEventListener('click', () => openCustomModal(state.activeLib, ''));
+  $('cancelCustomIcon').addEventListener('click', () => customIconModal.classList.remove('active'));
+  customIconModal.addEventListener('click', (e) => {
+    if (e.target === customIconModal) customIconModal.classList.remove('active');
+  });
+
+  document.querySelectorAll('#modalLibTabs .lib-tab').forEach(tab => {
+    tab.addEventListener('click', () => setModalLib(tab.dataset.modalLib));
+  });
+
+  customIconInput.addEventListener('input', updateCustomModalPreview);
+  customIconInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      $('confirmCustomIcon').click();
+    }
+  });
+
+  $('confirmCustomIcon').addEventListener('click', () => {
+    const raw = customIconInput.value.trim() || (modalActiveLib === 'fa' ? 'fa-qrcode' : modalActiveLib === 'ri' ? 'ri-qr-code-line' : 'ph-qr-code');
+    const className = buildClass(modalActiveLib, raw);
+    const shortName = extractShortName(modalActiveLib, raw);
+
+    // Save into library list if not already present
+    if (!ICONS[modalActiveLib].includes(shortName)) {
+      ICONS[modalActiveLib].unshift(shortName);
+    }
+
+    // Switch sidebar tab to match
+    state.activeLib = modalActiveLib;
+    document.querySelectorAll('#sidebarLibTabs .lib-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.lib === modalActiveLib);
+    });
+    renderLibrary();
+
+    addIcon(modalActiveLib, shortName, className, true);
+    customIconModal.classList.remove('active');
+    showToast(`Added ${shortName}`);
+  });
+
+  /* ---------------- Stage scale ---------------- */
+  function updateStageScale() {
+    const wrap = canvasWrapper;
+    const availW = wrap.clientWidth;
+    const availH = wrap.clientHeight;
+    const size = Math.max(180, Math.min(availW, availH, 580));
+
+    canvasViewport.style.width  = size + 'px';
+    canvasViewport.style.height = size + 'px';
+
+    const scale = size / VIRTUAL;
+    canvasStage.style.transform = `scale(${scale})`;
+    updateGridSize();
+    updateSelectionOverlay();
+  }
+
+  const ro = new ResizeObserver(updateStageScale);
+  ro.observe(canvasWrapper);
+
+  /* ---------------- Pointer interactions ---------------- */
+  canvasViewport.addEventListener('pointerdown', (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+
+    const handle = e.target.closest('.handle');
+    const iconEl = e.target.closest('.icon-item');
+
+    if (handle) {
+      e.preventDefault();
+      const icon = state.icons.find(i => i.id === state.selectedId);
+      if (!icon) return;
+      const rect = canvasViewport.getBoundingClientRect();
+      const scale = getScale();
+      const cx = rect.left + icon.x * scale;
+      const cy = rect.top  + icon.y * scale;
+      drag = {
+        mode: 'resize',
+        iconId: icon.id,
+        startSize: icon.size,
+        cx, cy,
+        moved: false,
+        startDist: Math.max(1, Math.hypot(e.clientX - cx, e.clientY - cy))
+      };
+      try { canvasViewport.setPointerCapture(e.pointerId); } catch (_) {}
+      return;
+    }
+
+    if (iconEl) {
+      e.preventDefault();
+      const id = iconEl.dataset.id;
+      if (state.selectedId !== id) {
+        state.selectedId = id;
+        panelIconId = null;
+        render();
+      }
+      const icon = state.icons.find(i => i.id === id);
+      if (!icon) return;
+      drag = {
+        mode: 'move',
+        iconId: icon.id,
+        startX: e.clientX,
+        startY: e.clientY,
+        origX: icon.x,
+        origY: icon.y,
+        moved: false
+      };
+      try { canvasViewport.setPointerCapture(e.pointerId); } catch (_) {}
+      return;
+    }
+
+    if (state.selectedId) {
+      state.selectedId = null;
+      render();
+    }
+  });
+
+  canvasViewport.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const icon = state.icons.find(i => i.id === drag.iconId);
+    if (!icon) return;
+    const scale = getScale();
+
+    if (drag.mode === 'move') {
+      const rawX = drag.origX + (e.clientX - drag.startX) / scale;
+      const rawY = drag.origY + (e.clientY - drag.startY) / scale;
+
+      const snapped = computeSnap(icon, rawX, rawY);
+      icon.x = clamp(snapped.x, 0, VIRTUAL);
+      icon.y = clamp(snapped.y, 0, VIRTUAL);
+      drag.moved = true;
+
+      render();
+      drawSnapGuides(snapped.guides);
+    } else if (drag.mode === 'resize') {
+      const dist = Math.hypot(e.clientX - drag.cx, e.clientY - drag.cy);
+      const ratio = dist / drag.startDist;
+      icon.size = Math.max(10, Math.min(500, drag.startSize * ratio));
+      drag.moved = true;
+      render();
+    }
+  });
+
+  function endDrag(e) {
+    if (!drag) return;
+    const wasMoved = drag.moved;
+    drag = null;
+    clearSnapGuides();
+    if (wasMoved) pushHistory();
+    try { canvasViewport.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+  canvasViewport.addEventListener('pointerup', endDrag);
+  canvasViewport.addEventListener('pointercancel', endDrag);
+
+  /* ---------------- Keyboard Shortcuts (Ctrl+Z, Ctrl+C, Ctrl+V, etc.) ---------------- */
+  window.addEventListener('keydown', (e) => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    const cmdOrCtrl = e.ctrlKey || e.metaKey;
+
+    // Undo: Ctrl+Z
+    if (cmdOrCtrl && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+      e.preventDefault();
+      undo();
+      return;
+    }
+    // Redo: Ctrl+Y or Ctrl+Shift+Z
+    if ((cmdOrCtrl && (e.key === 'y' || e.key === 'Y')) || (cmdOrCtrl && e.shiftKey && (e.key === 'z' || e.key === 'Z'))) {
+      e.preventDefault();
+      redo();
+      return;
+    }
+    // Copy: Ctrl+C
+    if (cmdOrCtrl && (e.key === 'c' || e.key === 'C')) {
+      if (state.selectedId) {
+        e.preventDefault();
+        copySelectedIcon();
+      }
+      return;
+    }
+    // Paste: Ctrl+V
+    if (cmdOrCtrl && (e.key === 'v' || e.key === 'V')) {
+      if (clipboardIcon) {
+        e.preventDefault();
+        pasteClipboardIcon();
+      }
+      return;
+    }
+
+    // View toggles (global)
+    if (!cmdOrCtrl && (e.key === 'g' || e.key === 'G')) {
+      toggleGrid.checked = !toggleGrid.checked;
+      state.showGrid = toggleGrid.checked;
+      renderAssistVisibility();
+      return;
+    }
+    if (!cmdOrCtrl && (e.key === 'c' || e.key === 'C') && !state.selectedId) {
+      toggleCenter.checked = !toggleCenter.checked;
+      state.showCenter = toggleCenter.checked;
+      renderAssistVisibility();
+      return;
+    }
+    if (!cmdOrCtrl && (e.key === 's' || e.key === 'S')) {
+      toggleSnap.checked = !toggleSnap.checked;
+      state.snapEnabled = toggleSnap.checked;
+      renderAssistVisibility();
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      if (customIconModal.classList.contains('active')) {
+        customIconModal.classList.remove('active');
+        return;
+      }
+      if (exportModal.classList.contains('active')) {
+        exportModal.classList.remove('active');
+        return;
+      }
+      if (state.selectedId) { state.selectedId = null; render(); }
+      return;
+    }
+
+    const icon = state.icons.find(i => i.id === state.selectedId);
+    if (!icon) return;
+
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      deleteSelectedIcon();
+    } else if (e.key === 'ArrowUp')    { icon.y = clamp(icon.y - (e.shiftKey ? 10 : 1), 0, VIRTUAL); e.preventDefault(); render(); pushHistory(); }
+    else if (e.key === 'ArrowDown')    { icon.y = clamp(icon.y + (e.shiftKey ? 10 : 1), 0, VIRTUAL); e.preventDefault(); render(); pushHistory(); }
+    else if (e.key === 'ArrowLeft')    { icon.x = clamp(icon.x - (e.shiftKey ? 10 : 1), 0, VIRTUAL); e.preventDefault(); render(); pushHistory(); }
+    else if (e.key === 'ArrowRight')   { icon.x = clamp(icon.x + (e.shiftKey ? 10 : 1), 0, VIRTUAL); e.preventDefault(); render(); pushHistory(); }
+    else if (cmdOrCtrl && (e.key === 'd' || e.key === 'D')) {
+      e.preventDefault();
+      duplicateSelectedIcon();
+    }
+  });
+
+  $('undoBtn').addEventListener('click', undo);$('redoBtn').addEventListener('click', redo);
+
+  /* ---------------- Sidebar controls ---------------- */
+  document.querySelectorAll('#sidebarLibTabs .lib-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#sidebarLibTabs .lib-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      state.activeLib = tab.dataset.lib;
+      renderLibrary();
+    });
+  });
+
+  iconSearch.addEventListener('input', (e) => {
+    state.search = e.target.value;
+    renderLibrary();
+  });
+
+  bgColorInput.addEventListener('input', (e) => {
+    state.bg = e.target.value;
+    state.transparent = false;
+    bgTransparent.checked = false;
+    renderCanvasStyles();
+  });
+  bgColorInput.addEventListener('change', () => pushHistory());
+
+  bgTransparent.addEventListener('change', (e) => {
+    state.transparent = e.target.checked;
+    renderCanvasStyles();
+    pushHistory();
+  });
+  radiusRange.addEventListener('input', (e) => {
+    state.radius = parseFloat(e.target.value);
+    radiusValue.textContent = state.radius + '%';
+    renderCanvasStyles();
+  });
+  radiusRange.addEventListener('change', () => pushHistory());
+
+  toggleGrid.addEventListener('change', (e) => { state.showGrid = e.target.checked; renderAssistVisibility(); });
+  toggleCenter.addEventListener('change', (e) => { state.showCenter = e.target.checked; renderAssistVisibility(); });
+  toggleSnap.addEventListener('change', (e) => { state.snapEnabled = e.target.checked; renderAssistVisibility(); });
+  toggleSnapGrid.addEventListener('change', (e) => { state.snapToGrid = e.target.checked; renderAssistVisibility(); });
+
+  quickToggleAssist.addEventListener('click', () => {
+    const anyOn = state.showGrid || state.showCenter || state.snapEnabled || state.snapToGrid;
+    const next = !anyOn;
+    state.showGrid = next;
+    state.showCenter = next;
+    state.snapEnabled = next;
+    state.snapToGrid = next;
+    toggleGrid.checked = next;
+    toggleCenter.checked = next;
+    toggleSnap.checked = next;
+    toggleSnapGrid.checked = next;
+    renderAssistVisibility();
+  });
+
+  const bgPalette = ['#ffffff','#f8fafc','#0f172a','#1a1d29','#6366f1','#8b5cf6','#ec4899','#ef4444','#f59e0b','#10b981','#06b6d4','#3b82f6'];
+  bgPalette.forEach(c => {
+    const s = document.createElement('button');
+    s.className = 'swatch';
+    s.style.background = c;
+    s.title = c;
+    s.onclick = () => {
+      state.bg = c;
+      state.transparent = false;
+      bgTransparent.checked = false;
+      bgColorInput.value = c;
+      renderCanvasStyles();
+      pushHistory();
+    };
+    bgSwatches.appendChild(s);
+  });
+
+  /* ---------------- Reset ---------------- */
+  $('resetBtn').addEventListener('click', () => {
+    if (state.icons.length && !confirm('Reset the canvas? All icons will be removed.')) return;
+    state.icons = [];
+    state.selectedId = null;
+    state.bg = '#ffffff';
+    state.transparent = false;
+    state.radius = 10;
+    panelIconId = null;
+    bgColorInput.value = '#ffffff';
+    bgTransparent.checked = false;
+    radiusRange.value = 10;
+    radiusValue.textContent = '10%';
+    renderCanvasStyles();
+    render();
+    pushHistory();
+  });
+
+  /* ---------------- Export ---------------- */
+  const exportModal = $('exportModal');
+  const formatGrid  = $('formatGrid');
+  const exportPreviewCanvas = $('exportPreviewCanvas');
+  const exportSizeRange = $('exportSizeRange');
+  const exportSizeValue = $('exportSizeValue');
+  let exportFormat = 'png';
+  let exportSize = 1024;
+
+  $('exportBtn').addEventListener('click', async () => {
+    exportModal.classList.add('active');
+    await resolveAllUnicode();
+    drawExportPreview();
+  });
+
+  $('cancelExport').addEventListener('click', () => exportModal.classList.remove('active'));
+  exportModal.addEventListener('click', (e) => {
+    if (e.target === exportModal) exportModal.classList.remove('active');
+  });
+
+  formatGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.format-btn');
+    if (!btn) return;
+    formatGrid.querySelectorAll('.format-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    exportFormat = btn.dataset.format;
+  });
+
+  exportSizeRange.addEventListener('input', (e) => {
+    exportSize = parseInt(e.target.value, 10);
+    exportSizeValue.textContent = exportSize;
+    drawExportPreview();
+  });
+
+  function roundRect(ctx, x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function renderToCanvas(canvas, size, forceBg) {
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const scale = size / VIRTUAL;
+    ctx.clearRect(0, 0, size, size);
+
+    if (!state.transparent || forceBg) {
+      const r = (state.radius / 100) * size;
+      ctx.beginPath();
+      roundRect(ctx, 0, 0, size, size, r);
+      ctx.fillStyle = state.transparent ? (forceBg || '#ffffff') : state.bg;
+      ctx.fill();
+    }
+
+    for (const icon of state.icons) {
+      const uni = unicodeCache.get(icon.className) || getUnicode(icon);
+      if (!uni) continue;
+
+      ctx.save();
+      ctx.translate(icon.x * scale, icon.y * scale);
+      if (icon.rotation) ctx.rotate(icon.rotation * Math.PI / 180);
+
+      const fs = icon.size * scale;
+      const spec = getFontSpec(icon);
+      ctx.font = `${spec.weight} ${fs}px "${spec.family}", "Font Awesome 6 Free", "Font Awesome 6 Brands", "remixicon", "Phosphor", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = icon.color;
+      ctx.fillText(uni, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  function drawExportPreview() {
+    renderToCanvas(exportPreviewCanvas, 280, null);
+  }
+
+  function buildSVG(size) {
+    const scale = size / VIRTUAL;
+    const r = (state.radius / 100) * size;
+
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+
+    if (!state.transparent) {
+      svg += `<rect width="${size}" height="${size}" rx="${r}" ry="${r}" fill="${escapeXml(state.bg)}"/>`;
+    }
+
+    for (const icon of state.icons) {
+      const uni = unicodeCache.get(icon.className) || getUnicode(icon);
+      if (!uni) continue;
+      const x = icon.x * scale;
+      const y = icon.y * scale;
+      const fs = icon.size * scale;
+      const spec = getFontSpec(icon);
+      const rot = icon.rotation;
+      const transform = rot ? ` transform="rotate(${rot} ${x} ${y})"` : '';
+      const families = `'${spec.family}', 'Font Awesome 6 Free', 'Font Awesome 6 Brands', 'remixicon', 'Phosphor', sans-serif`;
+      const cp = uni.codePointAt(0).toString(16);
+      svg += `<text x="${x}" y="${y}" font-family="${families}" font-size="${fs}" font-weight="${spec.weight}" fill="${escapeXml(icon.color)}" text-anchor="middle" dominant-baseline="central"${transform}>&#x${cp};</text>`;
+    }
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function buildHTML(size) {
+    const svg = buildSVG(size);
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exported Logo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css">
+<script src="https://unpkg.com/@phosphor-icons/web"><\/script>
+<style>
+  body { margin:0; display:grid; place-items:center; min-height:100vh; background:#f4f6fb; font-family:system-ui,sans-serif; }
+  .logo-wrap { width:min(${size}px, 90vmin); }
+  .logo-wrap svg { width:100%; height:auto; display:block; }
+</style>
+</head>
+<body>
+<div class="logo-wrap">
+${svg}
+</div>
+</body>
+</html>`;
+  }
+
+  function download(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  async function canvasToIco(canvas) {
+    const maxSize = 256;
+    let src = canvas;
+    if (canvas.width > maxSize) {
+      src = document.createElement('canvas');
+      src.width = maxSize;
+      src.height = maxSize;
+      const c = src.getContext('2d');
+      c.imageSmoothingEnabled = true;
+      c.imageSmoothingQuality = 'high';
+      c.drawImage(canvas, 0, 0, maxSize, maxSize);
+    }
+    const blob = await new Promise(res => src.toBlob(res, 'image/png'));
+    const pngData = new Uint8Array(await blob.arrayBuffer());
+
+    const header = new ArrayBuffer(22);
+    const view = new DataView(header);
+    view.setUint16(0, 0, true);
+    view.setUint16(2, 1, true);
+    view.setUint16(4, 1, true);
+    view.setUint8(6, maxSize >= 256 ? 0 : maxSize);
+    view.setUint8(7, maxSize >= 256 ? 0 : maxSize);
+    view.setUint8(8, 0);
+    view.setUint8(9, 0);
+    view.setUint16(10, 1, true);
+    view.setUint16(12, 32, true);
+    view.setUint32(14, pngData.length, true);
+    view.setUint32(18, 22, true);
+
+    return new Blob([header, pngData], { type: 'image/x-icon' });
+  }
+
+  async function ensureFonts() {
+    if (!document.fonts || !document.fonts.load) return;
+    const specs = [
+      '900 100px "Font Awesome 6 Free"',
+      '400 100px "Font Awesome 6 Free"',
+      '400 100px "Font Awesome 6 Brands"',
+      '400 100px "remixicon"',
+      '400 100px "Phosphor"'
+    ];
+    try { await Promise.all(specs.map(s => document.fonts.load(s))); } catch (e) {}
+  }
+
+  $('confirmExport').addEventListener('click', async () => {
+    await ensureFonts();
+    await resolveAllUnicode();
+
+    const format = exportFormat;
+    const size = exportSize;
+    const baseName = 'logo-' + Date.now();
+
+    try {
+      if (format === 'svg') {
+        const svg = buildSVG(size);
+        download(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }), baseName + '.svg');
+      } else if (format === 'html') {
+        const html = buildHTML(512);
+        download(new Blob([html], { type: 'text/html;charset=utf-8' }), baseName + '.html');
+      } else if (format === 'ico') {
+        const canvas = document.createElement('canvas');
+        renderToCanvas(canvas, Math.min(size, 256), '#ffffff');
+        const blob = await canvasToIco(canvas);
+        download(blob, baseName + '.ico');
+      } else {
+        const canvas = document.createElement('canvas');
+        const forceBg = format === 'jpg' ? '#ffffff' : null;
+        renderToCanvas(canvas, size, forceBg);
+        let mime = 'image/png';
+        if (format === 'jpg')  mime = 'image/jpeg';
+        if (format === 'webp') mime = 'image/webp';
+
+        await new Promise((resolve) => {
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              canvas.toBlob(b => { if (b) download(b, baseName + '.png'); resolve(); }, 'image/png');
+              return;
+            }
+            download(blob, baseName + '.' + format);
+            resolve();
+          }, mime, 0.95);
+        });
+      }
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Export failed. Please try again.');
+    }
+
+    exportModal.classList.remove('active');
+  });
+
+  /* ---------------- Init ---------------- */
+  function init() {
+    applyTheme(state.themeMode);
+    renderLibrary();
+    renderCanvasStyles();
+    renderAssistVisibility();
+    updateStageScale();
+    render();
+
+    const addDefault = () => {
+      if (state.icons.length === 0) {
+        addIcon('ph', 'ph-qr-code', null, false);
+        pushHistory();
+      }
+    };
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => setTimeout(addDefault, 120)).catch(() => setTimeout(addDefault, 400));
+    } else {
+      setTimeout(addDefault, 500);
+    }
+  }
+
+  init();
+
+  window.addEventListener('resize', updateStageScale);
+  window.addEventListener('orientationchange', () => setTimeout(updateStageScale, 200));
+
+})();
+</script>
+</body>
+</html>
